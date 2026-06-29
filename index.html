@@ -117,12 +117,12 @@
     .progress-bar-fill {
       height: 100%;
       width: 0%;
-      background-color: #ffffff; /* Progression blanche sobre */
+      background-color: #ffffff; /* Progression blanche */
       transition: width 0.3s ease;
     }
 
     /* -------------------------------------------------------------
-       NAVIGATION PAR SEMAINE (Lien plat, sans pilule)
+       NAVIGATION PAR SEMAINE
        ------------------------------------------------------------- */
     .nav-tabs-wrapper {
       margin: 24px 0 16px 0;
@@ -184,7 +184,7 @@
     }
 
     /* -------------------------------------------------------------
-       CARTES ACCORDÉONS (Design minimaliste sans arrondis excessifs)
+       CARTES ACCORDÉONS (Angles nets épurés)
        ------------------------------------------------------------- */
     .cards-container {
       display: flex;
@@ -422,7 +422,7 @@
     }
 
     /* -------------------------------------------------------------
-       ONGLET 3 : ACTIVITÉ INTERACTIVE
+       ONGLET 3 : ACTIVITÉ INTERACTIVE (STEPPER MULTI-QUESTIONS)
        ------------------------------------------------------------- */
     .activity-container {
       background-color: #040405;
@@ -558,7 +558,6 @@
       flex-direction: column;
     }
 
-    /* Simulation d'un header Bootstrap */
     .mock-bs-nav {
       background-color: #1e1e24;
       padding: 6px;
@@ -693,7 +692,7 @@
       border: 1px solid var(--card-border);
       padding: 12px;
       font-family: var(--font-mono);
-      font-size: 11.5px;
+      font-size: 11px;
     }
 
     .http-status-badge {
@@ -878,7 +877,7 @@
     }
 
     /* -------------------------------------------------------------
-       SECTION ACTIONS & COMPTEURS BAS
+       SECTION COMPTEURS ET STATS BAS
        ------------------------------------------------------------- */
     .actions-section {
       margin-top: 24px;
@@ -994,7 +993,6 @@
         <span>0</span> / 45 validés
       </div>
     </div>
-    <!-- Barre de progression intégrée en bordure inférieure -->
     <div class="progress-bar-bg">
       <div class="progress-bar-fill" id="progress-bar-fill"></div>
     </div>
@@ -1005,21 +1003,17 @@
        ============================================================= -->
   <main class="container">
     
-    <!-- Onglets des semaines -->
     <nav class="nav-tabs-wrapper" aria-label="Semaines">
       <div class="nav-tabs" id="nav-tabs"></div>
     </nav>
 
-    <!-- Informations semaine courante -->
     <div class="week-header">
       <h2 class="week-title" id="week-title">-</h2>
       <div class="week-subtitle" id="week-subtitle">-</div>
     </div>
 
-    <!-- Zone des cartes pliables -->
     <section class="cards-container" id="cards-container" aria-live="polite"></section>
 
-    <!-- Zone statistiques et réinitialisation -->
     <section class="actions-section">
       <div class="stats-grid">
         <div class="stat-box">
@@ -1038,23 +1032,17 @@
 
   </main>
 
-  <!-- =============================================================
-       PIED DE PAGE
-       ============================================================= -->
   <footer>
     <div class="container">
       <p>TFE Hub - Angular, NestJS & Prisma &bull; PostgreSQL (Neon.tech)</p>
-      <p style="opacity: 0.5; margin-top: 4px;">Formation quotidienne de 45 minutes répartie sur 9 semaines (300h).</p>
+      <p style="opacity: 0.5; margin-top: 4px;">Formation de 45 minutes par jour (300h de stage).</p>
     </div>
   </footer>
 
   <!-- =============================================================
-       LOGIQUE D'INTERACTION ET BASE DE DONNÉES COHÉRENTE
+       LOGIQUE ET BASE DE DONNÉES ENRICHIES (ANGULAR / NESTJS / PRISMA)
        ============================================================= -->
   <script>
-    /* -------------------------------------------------------------
-       BASE DE DONNÉES ENRICHIE (Angular, NestJS, Prisma, Neon.tech)
-       ------------------------------------------------------------- */
     const WEEKS_DATA = [
       {
         id: 1,
@@ -1085,14 +1073,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel critère qualité INVEST est violé si une User Story est formulée comme : 'Développer l'application de formation et de facturation complète' ?",
-              options: [
-                "Negotiable (Négociable)",
-                "Small (Petite)",
-                "Valuable (Valeur ajoutée)"
-              ],
-              correctIndex: 1,
-              explanation: "Une telle story regroupe plusieurs domaines complexes et volumineux. Elle n'est pas 'Small' et doit être découpée en dizaines de sous-stories estimables."
+              questions: [
+                {
+                  question: "Quel critère qualité INVEST est compromis si une User Story est formulée comme : 'Développer l'application de formation et de facturation complète' ?",
+                  options: [
+                    "Negotiable (Négociable)",
+                    "Small (Petite)",
+                    "Valuable (Valeur ajoutée)"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Une telle story regroupe plusieurs domaines complexes et volumineux. Elle n'est pas 'Small' et doit être découpée en dizaines de sous-stories estimables."
+                },
+                {
+                  question: "Que signifie le critère 'Testable' dans INVEST ?",
+                  options: [
+                    "Que le code compile sans erreurs",
+                    "Que la story possède des critères d'acceptation clairs permettant de valider sa conformité lors de la recette UAT",
+                    "Qu'elle est codée dans un fichier de tests unitaires"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Testable signifie qu'on peut déterminer de façon binaire (Succès/Échec) si le besoin fonctionnel est rempli grâce à des critères d'acceptation."
+                },
+                {
+                  question: "Pourquoi une User Story doit-elle être 'Independent' (Indépendante) ?",
+                  options: [
+                    "Pour pouvoir être développée, testée et livrée de manière isolée sans bloquer d'autres développements",
+                    "Pour ne pas avoir besoin de base de données",
+                    "Pour être gérée par un seul développeur"
+                  ],
+                  correctIndex: 0,
+                  explanation: "L'indépendance facilite la planification et la livraison continue : les stories peuvent être priorisées et développées dans n'importe quel ordre."
+                }
+              ]
             },
             aiResponses: {
               "invest": "L'acronyme INVEST définit une bonne US : Indépendante, Négociable, apporte de la Valeur, Estimable, Petite (Small), Testable.",
@@ -1170,14 +1182,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel outil collaboratif est le standard industriel actuel pour réaliser des mockups UI haute fidélité et des prototypes interactifs ?",
-              options: [
-                "Photoshop",
-                "Figma",
-                "Eclipse"
-              ],
-              correctIndex: 1,
-              explanation: "Figma est l'outil de référence vectoriel et collaboratif en ligne pour l'UI/UX design, facilitant les retours clients et l'export d'assets."
+              questions: [
+                {
+                  question: "Quel outil collaboratif est le standard industriel actuel pour réaliser des mockups UI haute fidélité et des prototypes interactifs ?",
+                  options: [
+                    "Photoshop",
+                    "Figma",
+                    "Eclipse"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Figma est l'outil de référence vectoriel et collaboratif en ligne pour l'UI/UX design, facilitant les retours clients et l'export d'assets."
+                },
+                {
+                  question: "Qu'est-ce qu'un Wireframe ?",
+                  options: [
+                    "Le code CSS compilé d'une page",
+                    "Un schéma de mise en page en noir et blanc pour structurer le placement des contenus sans s'occuper du graphisme",
+                    "Une base de données relationnelle"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Un wireframe sert à valider le placement des informations et le parcours utilisateur (UX) en faisant abstraction du design visuel (couleurs, logos)."
+                },
+                {
+                  question: "Quelle est la bonne pratique de grille d'espacement en design UI ?",
+                  options: [
+                    "Utiliser des espacements en multiples de 8 pixels (8px, 16px, 24px) pour harmoniser les marges et faciliter l'intégration",
+                    "Placer les marges au hasard",
+                    "Utiliser uniquement des nombres impairs"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La grille de 8px est le standard industriel (adopté par Material Design) pour créer des mises en pages régulières, fluides et faciles à coder."
+                }
+              ]
             },
             aiResponses: {
               "figma": "Figma permet de collaborer en temps réel sur la création de maquettes et d'exporter directement les styles CSS pour vos composants Angular.",
@@ -1203,14 +1239,38 @@
             diagram: "pert",
             activity: {
               type: "quiz",
-              question: "Qu'est-ce qu'une tâche avec une 'marge nulle' sur un diagramme PERT ?",
-              options: [
-                "Une tâche qui ne prend aucun jour de travail",
-                "Une tâche située sur le chemin critique dont tout retard repousse la fin du projet",
-                "Une tâche optionnelle"
-              ],
-              correctIndex: 1,
-              explanation: "Sur le chemin critique, la marge de retard est égale à zéro. Chaque jour de retard pris sur cette tâche décale d'autant le projet entier."
+              questions: [
+                {
+                  question: "Qu'est-ce qu'une tâche avec une 'marge nulle' sur un diagramme PERT ?",
+                  options: [
+                    "Une tâche qui ne prend aucun jour de travail",
+                    "Une tâche située sur le chemin critique dont tout retard repousse la fin du projet",
+                    "Une tâche optionnelle"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Sur le chemin critique, la marge de retard est égale à zéro. Chaque jour de retard pris sur cette tâche décale d'autant le projet entier."
+                },
+                {
+                  question: "À quoi sert principalement le diagramme de GANTT ?",
+                  options: [
+                    "À modéliser les schémas de base de données PostgreSQL",
+                    "À représenter visuellement les tâches le long d'une frise temporelle pour suivre leur avancement réel",
+                    "À compiler le code NestJS"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le diagramme de GANTT est un calendrier de projet. Il permet de voir d'un coup d'œil quelles tâches s'exécutent en parallèle ou en séquence."
+                },
+                {
+                  question: "Comment définit-on le 'chemin critique' ?",
+                  options: [
+                    "Le chemin le plus court pour finir le projet en oubliant la moitié des fonctionnalités",
+                    "La séquence de tâches indispensables qui détermine la durée totale minimale du projet",
+                    "La liste des bugs découverts en recette"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le chemin critique est la suite linéaire de tâches interdépendantes sans aucune marge de retard. C'est la durée minimale incompressible du projet."
+                }
+              ]
             },
             aiResponses: {
               "chemin critique": "C'est la séquence de tâches indispensables qui détermine la date de fin la plus proche de votre projet.",
@@ -1240,14 +1300,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel terme MoSCoW représente les fonctionnalités obligatoires sans lesquelles le projet ne peut être considéré comme fonctionnel ?",
-              options: [
-                "Must have",
-                "Should have",
-                "Could have"
-              ],
-              correctIndex: 0,
-              explanation: "Les fonctionnalités 'Must' constituent le socle minimal du MVP. Sans elles, l'application est considérée comme un échec."
+              questions: [
+                {
+                  question: "Quel terme MoSCoW représente les fonctionnalités obligatoires sans lesquelles le projet ne peut être considéré comme fonctionnel ?",
+                  options: [
+                    "Must have",
+                    "Should have",
+                    "Could have"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Les fonctionnalités 'Must' constituent le socle minimal du MVP. Sans elles, l'application est considérée comme un échec."
+                },
+                {
+                  question: "Qu'est-ce que le 'Scope Creep' ?",
+                  options: [
+                    "Une méthode de nettoyage de la base de données",
+                    "L'ajout non contrôlé de nouvelles fonctionnalités en cours de projet sans ajustement de calendrier ni de budget",
+                    "La compilation en continu du front-end"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le Scope Creep ou dérive des objectifs survient souvent suite à des demandes informelles du client. Il menace le respect du délai de livraison."
+                },
+                {
+                  question: "Dans MoSCoW, quelle est la signification du 'W' ?",
+                  options: [
+                    "Wanted (Souhaité mais secondaire)",
+                    "Won't have (Exclu du sprint actuel mais planifié pour plus tard)",
+                    "Working (Actuellement en cours de développement)"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le 'Won't have' permet d'écarter officiellement des demandes complexes pour se concentrer à 100% sur le MVP indispensable."
+                }
+              ]
             },
             aiResponses: {
               "mvp": "Le MVP est la version épurée de l'application apportant une valeur directe immédiate sans surplus.",
@@ -1280,17 +1364,41 @@
             diagram: "sequence",
             activity: {
               type: "quiz",
-              question: "Dans un diagramme de séquence UML, quel symbole matérialise l'envoi d'un message synchrone (attendant une réponse) ?",
-              options: [
-                "Une flèche en pointillés",
-                "Une flèche pleine avec pointe fermée",
-                "Une simple ligne sans pointe"
-              ],
-              correctIndex: 1,
-              explanation: "Une flèche pleine avec pointe fermée représente un message synchrone. Le retour de l'information est modélisé par une flèche en pointillés."
+              questions: [
+                {
+                  question: "Dans un diagramme de séquence UML, quel symbole matérialise l'envoi d'un message synchrone (attendant une réponse) ?",
+                  options: [
+                    "Une flèche en pointillés",
+                    "Une flèche pleine avec pointe fermée",
+                    "Une simple ligne sans pointe"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Une flèche pleine avec pointe fermée représente un message synchrone. Le retour de l'information est modélisé par une flèche en pointillés."
+                },
+                {
+                  question: "Quelle est la fonction d'un 'Use Case Diagram' (Cas d'utilisation) ?",
+                  options: [
+                    "Modéliser les tables SQL",
+                    "Définir la frontière du système, identifier ses utilisateurs (acteurs) et lister leurs droits d'actions",
+                    "Décrire le cycle de rendu d'Angular"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le diagramme de cas d'utilisation définit 'qui fait quoi' de manière macroscopique sans entrer dans la logique technique."
+                },
+                {
+                  question: "Qu'est-ce qu'une 'Lifeline' (ligne de vie) dans un diagramme de Séquence ?",
+                  options: [
+                    "La ligne pointillée verticale marquant l'existence temporelle d'un composant",
+                    "Une base de données de sauvegarde",
+                    "Une fonction de sécurité de NestJS"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La ligne de vie verticale montre la durée d'existence d'une instance ou d'un acteur au cours du déroulement du flux."
+                }
+              ]
             },
             aiResponses: {
-              "sequence": "Le diagramme de séquence se lit de haut en bas et illustre l'échange de messages au cours du temps.",
+              "sequence": "Le diagramme de séquence montre l'enchaînement temporel des messages et des requêtes entre composants.",
               "use case": "Définit les limites fonctionnelles et les rôles (droits) sur votre application.",
               "default": "Besoin d'aide pour tracer vos diagrammes UML pour le jury ?"
             }
@@ -1315,14 +1423,38 @@
             diagram: "mcd",
             activity: {
               type: "quiz",
-              question: "Si une table contient les colonnes (id, code_postal, ville) et que la ville dépend directement du code postal (attribut non-clé), quelle forme normale n'est pas respectée ?",
-              options: [
-                "La 1ère Forme Normale",
-                "La 2e Forme Normale",
-                "La 3e Forme Normale"
-              ],
-              correctIndex: 2,
-              explanation: "La 3NF interdit qu'un attribut dépend d'un autre attribut non-clé. Pour respecter la 3NF, il faudrait créer une table de référence CodePostal(code_postal [PK], ville)."
+              questions: [
+                {
+                  question: "Si une table contient les colonnes (id, code_postal, ville) et que la ville dépend directement du code postal (attribut non-clé), quelle forme normale n'est pas respectée ?",
+                  options: [
+                    "La 1ère Forme Normale",
+                    "La 2e Forme Normale",
+                    "La 3e Forme Normale"
+                  ],
+                  correctIndex: 2,
+                  explanation: "La 3NF interdit qu'un attribut dépend d'un autre attribut non-clé. Pour respecter la 3NF, il faudrait créer une table de référence CodePostal(code_postal [PK], ville)."
+                },
+                {
+                  question: "Qu'est-ce qu'un attribut 'atomique' au sens de la 1NF ?",
+                  options: [
+                    "Une valeur indivisible qui ne contient pas d'autres sous-données (ex: séparer 'Code Postal' et 'Ville')",
+                    "Une colonne chiffrée",
+                    "Une clé primaire composée"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La 1NF impose que chaque cellule de la table contienne une donnée élémentaire (pas de tableaux ni de concaténations complexes comme stocker nom et prénom ensemble)."
+                },
+                {
+                  question: "Comment Merise matérialise-t-il le nombre minimal et maximal d'associations possibles d'une entité ?",
+                  options: [
+                    "Les cardinalités (ex: 0,N ou 1,1)",
+                    "Les clés primaires",
+                    "Les liaisons GitFlow"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Les cardinalités définissent les règles métier de participation (ex: 1,1 signifie qu'une commande appartient à exactement un client)."
+                }
+              ]
             },
             aiResponses: {
               "mcd": "Le MCD formalise la structure des entités et relations théoriques de la base PostgreSQL.",
@@ -1350,14 +1482,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Pourquoi Neon.tech fournit-il deux chaînes de connexion réseau distinctes (DATABASE_URL et DIRECT_URL) ?",
-              options: [
-                "L'une est pour le protocole HTTP et l'autre pour WebSocket",
-                "DATABASE_URL utilise le pooling de connexion PgBouncer pour l'application active, tandis que DIRECT_URL permet à Prisma d'exécuter des requêtes système de migration en direct",
-                "L'une est publique et l'autre est privée"
-              ],
-              correctIndex: 1,
-              explanation: "Les migrations Prisma ont besoin d'une connexion directe (DIRECT_URL) pour créer des verrous et modifier les tables. L'application utilise le pooler PgBouncer (DATABASE_URL) pour optimiser les requêtes concurrentes."
+              questions: [
+                {
+                  question: "Pourquoi Neon.tech fournit-il deux chaînes de connexion réseau distinctes (DATABASE_URL et DIRECT_URL) ?",
+                  options: [
+                    "L'une est pour le protocole HTTP et l'autre pour WebSocket",
+                    "DATABASE_URL utilise le pooling de connexion PgBouncer pour l'application active, tandis que DIRECT_URL permet à Prisma d'exécuter des requêtes système de migration en direct",
+                    "L'une est publique et l'autre est privée"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Les migrations Prisma ont besoin d'une connexion directe (DIRECT_URL) pour créer des verrous et modifier les tables. L'application utilise le pooler PgBouncer (DATABASE_URL) pour optimiser les requêtes concurrentes."
+                },
+                {
+                  question: "Quel est l'atout du 'Database Branching' proposé par Neon.tech ?",
+                  options: [
+                    "Permettre de crypter les données",
+                    "Créer instantanément une copie isolée de la structure et des données de production pour tester des migrations Prisma sans risques",
+                    "Remplacer le besoin d'un dépôt Git"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le branching Neon permet aux développeurs de cloner la base de données en une seconde pour travailler en local sur des branches isolées."
+                },
+                {
+                  question: "Quel outil de pooling de connexions PostgreSQL Neon.tech intègre-t-il nativement ?",
+                  options: [
+                    "PgBouncer",
+                    "Bcrypt",
+                    "Pino"
+                  ],
+                  correctIndex: 0,
+                  explanation: "PgBouncer est le standard de l'industrie pour gérer et recycler des pools de connexions PostgreSQL."
+                }
+              ]
             },
             aiResponses: {
               "neon": "Neon.tech est une base de données PostgreSQL serverless, offrant le branching instantané et un pooling PgBouncer intégré.",
@@ -1384,14 +1540,38 @@
             diagram: "gitflow",
             activity: {
               type: "quiz",
-              question: "Quelle branche du dépôt GitFlow doit impérativement correspondre à l'état de l'application déployée en production ?",
-              options: [
-                "develop",
-                "main",
-                "feature/"
-              ],
-              correctIndex: 1,
-              explanation: "La branche main est le miroir de la production. Elle ne reçoit que des fusions de branches prêtes et validées pour le déploiement public."
+              questions: [
+                {
+                  question: "Quelle branche du dépôt GitFlow doit impérativement correspondre à l'état de l'application déployée en production ?",
+                  options: [
+                    "develop",
+                    "main",
+                    "feature/"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La branche main est le miroir de la production. Elle ne reçoit que des fusions de branches prêtes et validées pour le déploiement public."
+                },
+                {
+                  question: "À partir de quelle branche doit-on créer sa branche de fonctionnalité 'feature/mon-developpement' ?",
+                  options: [
+                    "main",
+                    "develop",
+                    "Une autre branche feature/"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Les branches de fonctionnalités doivent toujours démarrer du code de développement central à jour (develop) pour éviter les conflits."
+                },
+                {
+                  question: "Que fait la commande 'git push origin feature/mon-dev' ?",
+                  options: [
+                    "Elle supprime la branche locale",
+                    "Elle téléverse votre branche locale de fonctionnalité et ses commits sur le dépôt distant (ex: GitHub)",
+                    "Elle déploie l'application sur Render"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Cette commande envoie vos modifications locales sur le serveur d'hébergement distant Git pour pouvoir initier une Pull Request."
+                }
+              ]
             },
             aiResponses: {
               "gitflow": "GitFlow organise le travail d'intégration en protégeant la branche principale main de tout commit direct.",
@@ -1463,14 +1643,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel composant de l'architecture NestJS est responsable d'intercepter les requêtes HTTP et de définir les URI de l'API ?",
-              options: [
-                "Le Service",
-                "Le Contrôleur",
-                "Le Module"
-              ],
-              correctIndex: 1,
-              explanation: "Le Contrôleur (Controller) intercepte les requêtes HTTP entrantes pour y associer des routes de l'API et traiter les retours."
+              questions: [
+                {
+                  question: "Quel composant de l'architecture NestJS est responsable d'intercepter les requêtes HTTP et de définir les URI de l'API ?",
+                  options: [
+                    "Le Service",
+                    "Le Contrôleur",
+                    "Le Module"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le Contrôleur (Controller) intercepte les requêtes HTTP entrantes pour y associer des routes de l'API et traiter les retours."
+                },
+                {
+                  question: "Quel décorateur NestJS déclare une classe comme étant un module regroupant contrôleurs et fournisseurs ?",
+                  options: [
+                    "@Module()",
+                    "@Controller()",
+                    "@Injectable()"
+                  ],
+                  correctIndex: 0,
+                  explanation: "@Module() est le décorateur central de NestJS qui configure l'arborescence et les dépendances d'une brique applicative."
+                },
+                {
+                  question: "Dans quel fichier central configure-t-on les modules de démarrage de NestJS ?",
+                  options: [
+                    "main.ts",
+                    "app.module.ts",
+                    "schema.prisma"
+                  ],
+                  correctIndex: 1,
+                  explanation: "app.module.ts est le module racine chargé au démarrage du serveur (dans main.ts) qui importe tous les autres sous-modules."
+                }
+              ]
             },
             aiResponses: {
               "module": "Le module encapsule les contrôleurs et services associés à un domaine fonctionnel de l'application.",
@@ -1486,7 +1690,7 @@
             course: `
               <div class="course-text">
                 <p>La **Programmation Orientée Objet (POO)** en JavaScript moderne s'appuie sur le sucre syntaxique des <strong>Classes ES6</strong>, tout en reposant sur le modèle sous-jacent de l'<strong>héritage prototypal</strong> de la chaîne de prototypes.</p>
-                <p>TypeScript enrichit ce modèle avec des décorateurs et des types statiques exploités par NestJS :</p>
+                <p>TypeScript de NestJS s'appuie sur ces structures de classes :</p>
                 <ul class="course-list">
                   <li><strong>Encapsulation par champs privés</strong> : Pour empêcher la modification directe des variables internes d'une instance, on déclare des champs privés préfixés par le caractère <code>#</code>. Ils sont strictement inaccessibles depuis l'extérieur de la classe.</li>
                   <li><strong>Accesseurs (Getters / Setters)</strong> : On utilise les mots-clés <code>get</code> et <code>set</code> pour créer des méthodes qui se comportent comme des propriétés simples, permettant de contrôler ou de valider la lecture et l'écriture de données.</li>
@@ -1495,18 +1699,42 @@
                 <p>En NestJS, la POO est la norme : chaque service, contrôleur ou middleware est une classe TypeScript instanciée et gérée par le conteneur IoC (Inversion of Control).</p>
               </div>
             `,
-            example: `// Exemple de classe service encapsulée en TypeScript ES6 moderne\n\nclass StudentService {\n  // Attribut privé\n  #prisma;\n\n  constructor(prismaInstance) {\n    this.#prisma = prismaInstance;\n  }\n\n  // Accesseur en lecture\n  get hasPrisma() {\n    return !!this.#prisma;\n  }\n\n  async getProfile(id) {\n    return await this.#prisma.student.findUnique({ where: { id } });\n  }\n}\n\n// Héritage\nclass VipStudentService extends StudentService {\n  constructor(prismaInstance) {\n    super(prismaInstance); // Appel du constructeur parent\n  }\n}`,
+            example: `// Exemple de classe service de données en TypeScript ES6 moderne\n\nclass StudentService {\n  // Attribut privé\n  #prisma;\n\n  constructor(prismaInstance) {\n    this.#prisma = prismaInstance;\n  }\n\n  // Accesseur en lecture\n  get hasPrisma() {\n    return !!this.#prisma;\n  }\n\n  async getProfile(id) {\n    return await this.#prisma.student.findUnique({ where: { id } });\n  }\n}\n\n// Héritage\nclass VipStudentService extends StudentService {\n  constructor(prismaInstance) {\n    super(prismaInstance); // Appel du constructeur parent\n  }\n}`,
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle notation de JavaScript moderne ES6 permet de rendre un attribut de classe strictement privé et inaccessible depuis l'extérieur de celle-ci ?",
-              options: [
-                "private monAttribut;",
-                "this._monAttribut = ...",
-                "#monAttribut;"
-              ],
-              correctIndex: 2,
-              explanation: "Le préfixe # est la syntaxe JavaScript standard (ES2022) pour définir des propriétés privées inaccessibles depuis l'extérieur de la classe, même après compilation TypeScript."
+              questions: [
+                {
+                  question: "Quelle notation de JavaScript moderne ES6 permet de rendre un attribut de classe strictement privé et inaccessible depuis l'extérieur de celle-ci ?",
+                  options: [
+                    "private monAttribut;",
+                    "this._monAttribut = ...",
+                    "#monAttribut;"
+                  ],
+                  correctIndex: 2,
+                  explanation: "Le préfixe # est la syntaxe JavaScript standard (ES2022) pour définir des propriétés privées inaccessibles depuis l'extérieur de la classe, même après compilation TypeScript."
+                },
+                {
+                  question: "Que fait le mot-clé 'super()' dans le constructeur d'une classe fille héritant d'une classe parente ?",
+                  options: [
+                    "Il détruit la classe parente",
+                    "Il invoque le constructeur de la classe parente pour hériter de ses propriétés d'instance",
+                    "Il active le mode strict"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La méthode super() appelle le constructeur parent. Elle doit impérativement être appelée avant d'utiliser le mot-clé 'this' dans la classe enfant."
+                },
+                {
+                  question: "Comment définit-on un accesseur en écriture contrôlé en JavaScript/TypeScript ?",
+                  options: [
+                    "En utilisant le mot-clé 'write'",
+                    "En utilisant le mot-clé 'set' devant le nom de la méthode",
+                    "En créant une variable globale"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le mot-clé 'set' définit un setter, permettant d'exécuter une fonction de validation de données lorsqu'on tente d'assigner une valeur à la propriété."
+                }
+              ]
             },
             aiResponses: {
               "champs prives": "Le symbole # empêche toute lecture ou modification de la propriété depuis l'extérieur de l'instance.",
@@ -1533,14 +1761,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel décorateur doit-on ajouter au-dessus d'une classe de service NestJS pour indiquer au framework qu'elle peut être injectée comme dépendance ?",
-              options: [
-                "@Controller()",
-                "@Injectable()",
-                "@Module()"
-              ],
-              correctIndex: 1,
-              explanation: "Le décorateur @Injectable() déclare la classe auprès de l'injecteur NestJS, permettant son instanciation automatique dans les constructeurs."
+              questions: [
+                {
+                  question: "Quel décorateur doit-on ajouter au-dessus d'une classe de service NestJS pour indiquer au framework qu'elle peut être injectée comme dépendance ?",
+                  options: [
+                    "@Controller()",
+                    "@Injectable()",
+                    "@Module()"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le décorateur @Injectable() déclare la classe auprès de l'injecteur NestJS, permettant son instanciation automatique dans les constructeurs."
+                },
+                {
+                  question: "Comment NestJS identifie-t-il les dépendances à fournir dans le constructeur d'un contrôleur ?",
+                  options: [
+                    "En analysant les types TypeScript définis dans les paramètres du constructeur",
+                    "En lisant le fichier de configuration .env",
+                    "En recherchant les fichiers SQL de Neon.tech"
+                  ],
+                  correctIndex: 0,
+                  explanation: "NestJS utilise le mécanisme de réflexion de TypeScript pour inspecter les types des paramètres de constructeur et résoudre les singletons à injecter."
+                },
+                {
+                  question: "Quel est l'atout principal de l'injection de dépendances pour les tests automatisés ?",
+                  options: [
+                    "Elle accélère le chargement CSS",
+                    "Elle permet d'injecter des services factices (mocks) pour tester le contrôleur de façon totalement isolée",
+                    "Elle rend la base de données plus volumineuse"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La DI permet de remplacer aisément le vrai PrismaService par un mock en mémoire lors des tests, isolant la classe sous test du réseau."
+                }
+              ]
             },
             aiResponses: {
               "injection": "L'injection de dépendance permet de séparer la création des objets de leur utilisation.",
@@ -1568,14 +1820,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel décorateur permet d'indiquer à NestJS quelles exceptions précises doivent être interceptées par un Exception Filter ?",
-              options: [
-                "@Injectable()",
-                "@Catch()",
-                "@UseGuards()"
-              ],
-              correctIndex: 1,
-              explanation: "Le décorateur @Catch(...) accepte une liste de classes d'exceptions (ex: HttpException) que le filtre doit surveiller et intercepter."
+              questions: [
+                {
+                  question: "Quel décorateur permet d'indiquer à NestJS quelles exceptions précises doivent être interceptées par un Exception Filter ?",
+                  options: [
+                    "@Injectable()",
+                    "@Catch()",
+                    "@UseGuards()"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le décorateur @Catch(...) accepte une liste de classes d'exceptions (ex: HttpException) que le filtre doit surveiller et intercepter."
+                },
+                {
+                  question: "Que se passe-t-il par défaut si une erreur SQL brute est levée dans un service NestJS sans Exception Filter ?",
+                  options: [
+                    "L'application se ferme immédiatement",
+                    "NestJS intercepte l'erreur et renvoie une réponse HTTP 500 générique",
+                    "Le code s'autocorrige"
+                  ],
+                  correctIndex: 1,
+                  explanation: "NestJS intègre une barrière d'exception globale qui capture les erreurs brutes pour éviter le plantage du thread Node.js et retourne un code HTTP 500."
+                },
+                {
+                  question: "Quelle interface TypeScript doit-on implémenter pour créer un Exception Filter sous NestJS ?",
+                  options: [
+                    "CanActivate",
+                    "ExceptionFilter",
+                    "NestInterceptor"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Pour créer un filtre d'exception valide, la classe doit implémenter l'interface 'ExceptionFilter' et sa méthode 'catch()'."
+                }
+              ]
             },
             aiResponses: {
               "exception filter": "Permet de centraliser et d'homogénéiser le format de retour des erreurs d'API de votre TFE.",
@@ -1604,17 +1880,41 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle interface TypeScript impose d'implémenter la méthode 'onModuleInit' pour gérer la connexion réseau au démarrage de NestJS ?",
-              options: [
-                "OnModuleInit",
-                "OnModuleDestroy",
-                "OnInit"
-              ],
-              correctIndex: 0,
-              explanation: "L'interface OnModuleInit de NestJS définit le hook de cycle de vie onModuleInit(), exécuté par le framework dès que le module est instancié."
+              questions: [
+                {
+                  question: "Quelle interface TypeScript impose d'implémenter la méthode 'onModuleInit' pour gérer la connexion réseau au démarrage de NestJS ?",
+                  options: [
+                    "OnModuleInit",
+                    "OnModuleDestroy",
+                    "OnInit"
+                  ],
+                  correctIndex: 0,
+                  explanation: "L'interface OnModuleInit de NestJS définit le hook de cycle de vie onModuleInit(), exécuté par le framework dès que le module est instancié."
+                },
+                {
+                  question: "Quelle commande de terminal génère les fichiers du client Prisma suite à la modification de vos modèles ?",
+                  options: [
+                    "npx prisma init",
+                    "npx prisma generate",
+                    "npx prisma migrate"
+                  ],
+                  correctIndex: 1,
+                  explanation: "npx prisma generate compile le schéma déclaratif pour créer les types TypeScript et la classe PrismaClient correspondante."
+                },
+                {
+                  question: "Comment ferme-t-on proprement la connexion à la base PostgreSQL lors de l'arrêt du serveur NestJS ?",
+                  options: [
+                    "En appelant la méthode this.$disconnect() dans le hook onModuleDestroy()",
+                    "En supprimant le fichier .env",
+                    "En éteignant la base de données Neon.tech"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Le hook onModuleDestroy() est appelé par NestJS lors de l'arrêt, permettant de libérer proprement les connexions PostgreSQL."
+                }
+              ]
             },
             aiResponses: {
-              "prisma client": "PrismaClient est le moteur d'exécution généré par Prisma pour requêter la base PostgreSQL.",
+              "prisma client": "PrismaClient est le moteur de requête auto-généré qui s'interface avec PostgreSQL.",
               "onmoduleinit": "Hook de NestJS permettant d'exécuter du code d'initialisation réseau ou système au démarrage.",
               "default": "Besoin d'aide pour générer votre client Prisma ou écrire le service d'intégration ?"
             }
@@ -1648,14 +1948,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle méthode Prisma Client permet de modifier des données déjà enregistrées dans une table PostgreSQL ?",
-              options: [
-                "save()",
-                "update()",
-                "create()"
-              ],
-              correctIndex: 1,
-              explanation: "La méthode update() de Prisma Client prend en argument un objet spécifiant la condition (where) et les nouvelles données à écrire (data)."
+              questions: [
+                {
+                  question: "Quelle méthode Prisma Client permet de modifier des données déjà enregistrées dans une table PostgreSQL ?",
+                  options: [
+                    "save()",
+                    "update()",
+                    "create()"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La méthode update() de Prisma Client prend en argument un objet spécifiant la condition (where) et les nouvelles données à écrire (data)."
+                },
+                {
+                  question: "Quelle clause Prisma sert à spécifier l'identifiant unique de la ligne cible pour findUnique() ?",
+                  options: [
+                    "where",
+                    "select",
+                    "include"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La clause 'where' définit les conditions d'isolation de la donnée (ex: where: { id: 5 })."
+                },
+                {
+                  question: "Comment insère-t-on plusieurs enregistrements SQL en un seul appel Prisma ?",
+                  options: [
+                    "createMultiple()",
+                    "createMany()",
+                    "insert()"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La méthode createMany() permet d'insérer un tableau d'objets en base de données en une seule transaction performante."
+                }
+              ]
             },
             aiResponses: {
               "crud": "CRUD désigne les 4 actions de persistance de données : Create, Read, Update, Delete.",
@@ -1679,14 +2003,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel décorateur de validation permet d'imposer qu'une propriété du DTO ne doit pas être une chaîne vide ou nulle ?",
-              options: [
-                "@IsString()",
-                "@IsNotEmpty()",
-                "@MinLength()"
-              ],
-              correctIndex: 1,
-              explanation: "@IsNotEmpty() de class-validator s'assure que le paramètre fourni contient des caractères réels et n'est pas vide."
+              questions: [
+                {
+                  question: "Quel décorateur de validation permet d'imposer qu'une propriété du DTO ne doit pas être une chaîne vide ou nulle ?",
+                  options: [
+                    "@IsString()",
+                    "@IsNotEmpty()",
+                    "@MinLength()"
+                  ],
+                  correctIndex: 1,
+                  explanation: "@IsNotEmpty() de class-validator s'assure que le paramètre fourni contient des caractères réels et n'est pas vide."
+                },
+                {
+                  question: "Quel middleware ou mécanisme global de NestJS active le traitement automatique des décorateurs de validation des DTOs ?",
+                  options: [
+                    "ValidationPipe",
+                    "ExceptionFilter",
+                    "AuthGuard"
+                  ],
+                  correctIndex: 0,
+                  explanation: "L'instruction 'app.useGlobalPipes(new ValidationPipe())' dans main.ts active la validation déclarative globale."
+                },
+                {
+                  question: "Que fait le paramètre 'whitelist: true' passé dans la configuration du ValidationPipe ?",
+                  options: [
+                    "Il crypte les données de l'utilisateur",
+                    "Il supprime automatiquement toutes les propriétés de l'objet reçu qui ne sont pas déclarées dans la classe du DTO",
+                    "Il bloque toutes les adresses IP inconnues"
+                  ],
+                  correctIndex: 1,
+                  explanation: "L'option 'whitelist' filtre les injections de données malveillantes en rejetant les propriétés non documentées dans le DTO."
+                }
+              ]
             },
             aiResponses: {
               "dto": "Data Transfer Object : classe TypeScript formalisant la forme de la donnée reçue par l'API.",
@@ -1713,14 +2061,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel est le danger de l'utilisation de méthodes synchrones (comme fs.readFileSync) sur un serveur d'API NestJS ?",
-              options: [
-                "Elles provoquent le chiffrement forcé de la base de données",
-                "Elles figent totalement le serveur et bloquent le traitement des requêtes de tous les utilisateurs pendant l'opération",
-                "Elles augmentent la taille du fichier schema.prisma"
-              ],
-              correctIndex: 1,
-              explanation: "Node.js est mono-thread. Une opération synchrone bloque ce thread, empêchant NestJS de traiter toute autre requête concurrente."
+              questions: [
+                {
+                  question: "Quel est le danger de l'utilisation de méthodes synchrones (comme fs.readFileSync) sur un serveur d'API NestJS ?",
+                  options: [
+                    "Elles provoquent le chiffrement forcé de la base de données",
+                    "Elles figent totalement le serveur et bloquent le traitement des requêtes de tous les utilisateurs pendant l'opération",
+                    "Elles augmentent la taille du fichier schema.prisma"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Node.js est mono-thread. Une opération synchrone bloque ce thread, empêchant NestJS de traiter toute autre requête concurrente."
+                },
+                {
+                  question: "Que retourne par défaut une fonction déclarée avec le mot-clé 'async' ?",
+                  options: [
+                    "Une Promise JavaScript",
+                    "Un Observable RxJS",
+                    "Une chaîne de caractères"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Toute fonction async renvoie obligatoirement un objet Promise représentant l'achèvement futur de l'opération."
+                },
+                {
+                  question: "Comment attrape-t-on les erreurs asynchrones générées dans un bloc 'await' ?",
+                  options: [
+                    "En utilisant un callback next()",
+                    "En enveloppant le code dans une structure try / catch",
+                    "Le code asynchrone ne peut pas générer d'erreurs"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La structure standard try / catch permet d'intercepter les rejets de promesses (rejections) de la même manière que des exceptions synchrones."
+                }
+              ]
             },
             aiResponses: {
               "asynchronisme": "Le modèle non-bloquant de Node.js délègue les tâches d'E/S au système d'exploitation pour rester réactif.",
@@ -1747,14 +2119,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle instruction Prisma Client utiliseriez-vous pour récupérer uniquement le titre d'un cours sans charger sa description en mémoire ?",
-              options: [
-                "include",
-                "select",
-                "where"
-              ],
-              correctIndex: 1,
-              explanation: "L'instruction 'select' permet d'isoler les colonnes cibles à rapatrier de la base de données PostgreSQL."
+              questions: [
+                {
+                  question: "Quelle instruction Prisma Client utiliseriez-vous pour récupérer uniquement le titre d'un cours sans charger sa description en mémoire ?",
+                  options: [
+                    "include",
+                    "select",
+                    "where"
+                  ],
+                  correctIndex: 1,
+                  explanation: "L'instruction 'select' permet d'isoler les colonnes cibles à rapatrier de la base de données PostgreSQL."
+                },
+                {
+                  question: "Dans schema.prisma, quel attribut déclare qu'un champ est une clé primaire unique ?",
+                  options: [
+                    "@id",
+                    "@unique",
+                    "@relation"
+                  ],
+                  correctIndex: 0,
+                  explanation: "L'attribut @id configure la propriété comme étant l'identifiant unique (Primary Key) de la table SQL."
+                },
+                {
+                  question: "Comment configure-t-on une relation pour qu'elle soit générée automatiquement par auto-incrémentation dans PostgreSQL ?",
+                  options: [
+                    "@default(uuid())",
+                    "@default(autoincrement())",
+                    "@default(now())"
+                  ],
+                  correctIndex: 1,
+                  explanation: "@default(autoincrement()) délègue l'attribution de l'ID à un compteur de séquence automatique géré par PostgreSQL."
+                }
+              ]
             },
             aiResponses: {
               "select": "select permet de choisir les attributs à extraire et améliore la sécurité et les performances.",
@@ -1778,14 +2174,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel décorateur de propriété Swagger permet de documenter les types de champs de vos DTOs pour qu'ils s'affichent dans la section 'Schemas' de l'interface ?",
-              options: [
-                "@ApiProperty()",
-                "@ApiResponse()",
-                "@ApiOperation()"
-              ],
-              correctIndex: 0,
-              explanation: "Le décorateur @ApiProperty() de @nestjs/swagger documente la propriété de classe dans le schéma Swagger généré."
+              questions: [
+                {
+                  question: "Quel décorateur de propriété Swagger permet de documenter les types de champs de vos DTOs pour qu'ils s'affichent dans la section 'Schemas' de l'interface ?",
+                  options: [
+                    "@ApiProperty()",
+                    "@ApiResponse()",
+                    "@ApiOperation()"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Le décorateur @ApiProperty() de @nestjs/swagger documente la propriété de classe dans le schéma Swagger généré."
+                },
+                {
+                  question: "Quelle méthode de NestJS lie l'interface graphique interactive de Swagger à une route d'accès spécifique (ex: '/api/docs') ?",
+                  options: [
+                    "SwaggerModule.createDocument()",
+                    "SwaggerModule.setup()",
+                    "app.enableSwagger()"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La méthode SwaggerModule.setup() prend en arguments le chemin d'URL d'accès, l'instance du serveur et l'objet de document pour générer l'UI."
+                },
+                {
+                  question: "Quel décorateur de route Swagger documente le code statut retourné en cas de succès de la requête ?",
+                  options: [
+                    "@ApiResponse({ status: 200 })",
+                    "@HttpCode(200)",
+                    "@ApiOkResponse()"
+                  ],
+                  correctIndex: 2,
+                  explanation: "@ApiOkResponse() (ou @ApiResponse({ status: 200 })) indique explicitement à Swagger la forme et le statut de la réponse de succès."
+                }
+              ]
             },
             aiResponses: {
               "swagger": "Swagger documente les routes de l'API et permet de tester directement les requêtes HTTP depuis le navigateur.",
@@ -1857,17 +2277,41 @@
             diagram: "jwt",
             activity: {
               type: "quiz",
-              question: "Quelle partie d'un token JWT garantit que le payload n'a pas été modifié ou altéré par l'utilisateur lors de son transfert ?",
-              options: [
-                "Le Header",
-                "Le Payload",
-                "La Signature"
-              ],
-              correctIndex: 2,
-              explanation: "La signature est calculée à partir du header, du payload et d'une clé secrète. Si un seul octet du payload change, la signature calculée par le serveur ne correspondra plus, invalidant le token."
+              questions: [
+                {
+                  question: "Quelle partie d'un token JWT garantit que le payload n'a pas été modifié ou altéré par l'utilisateur lors de son transfert ?",
+                  options: [
+                    "Le Header",
+                    "Le Payload",
+                    "La Signature"
+                  ],
+                  correctIndex: 2,
+                  explanation: "La signature est calculée à partir du header, du payload et d'une clé secrète. Si un seul octet du payload change, la signature calculée par le serveur ne correspondra plus, invalidant le token."
+                },
+                {
+                  question: "Où stocke-t-on les informations d'identité (userId, rôle) au sein du token JWT ?",
+                  options: [
+                    "Dans la signature",
+                    "Dans le payload (charge utile)",
+                    "Dans les en-têtes HTTP"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le payload contient les données de session (claims) encodées en Base64 que le serveur décodera pour identifier le client."
+                },
+                {
+                  question: "Quel est le but d'un jeton d'accès 'stateless' ?",
+                  options: [
+                    "Permettre de crypter la base de données",
+                    "Permettre au serveur de valider l'utilisateur sans interroger la base SQL à chaque requête réseau",
+                    "Obliger l'utilisation de cookies"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Puisque le token contient une signature valide, le serveur sait qu'il a lui-même créé le jeton et fait confiance au payload décodé directement."
+                }
+              ]
             },
             aiResponses: {
-              "payload": "Le payload stocke les informations de l'utilisateur. Attention, il n'est pas crypté, juste encodé en Base64.",
+              "payload": "Le payload du JWT contient les informations de l'utilisateur (claims), encodées mais lisibles par tous en Base64.",
               "jwt": "@nestjs/jwt gère la création et la validation des jetons JWT.",
               "default": "Besoin de configurer la durée d'expiration ou le secret d'un JWT ?"
             }
@@ -1888,14 +2332,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel décorateur NestJS permet d'appliquer un Guard d'authentification sur une route spécifique d'un contrôleur ?",
-              options: [
-                "@UseGuards()",
-                "@Injectable()",
-                "@Catch()"
-              ],
-              correctIndex: 0,
-              explanation: "Le décorateur @UseGuards() prend en argument un ou plusieurs Guards à exécuter avant de traiter la route ciblée."
+              questions: [
+                {
+                  question: "Quel décorateur NestJS permet d'appliquer un Guard d'authentification sur une route spécifique d'un contrôleur ?",
+                  options: [
+                    "@UseGuards()",
+                    "@Injectable()",
+                    "@Catch()"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Le décorateur @UseGuards() prend en argument un ou plusieurs Guards à exécuter avant de traiter la route ciblée."
+                },
+                {
+                  question: "Quelle méthode obligatoire de l'interface CanActivate doit implémenter un Guard dans NestJS ?",
+                  options: [
+                    "catch()",
+                    "canActivate()",
+                    "intercept()"
+                  ],
+                  correctIndex: 1,
+                  explanation: "canActivate() doit retourner un booléen ou une promesse résolvant à un booléen. Si c'est true, la route s'exécute."
+                },
+                {
+                  question: "Que se passe-t-il si la méthode canActivate() d'un Guard lève une exception ou retourne false ?",
+                  options: [
+                    "Le serveur crash",
+                    "NestJS bloque l'accès et renvoie automatiquement une erreur HTTP 403 Forbidden ou 401 Unauthorized",
+                    "La route s'exécute normalement"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Retourner false provoque une ForbiddenException. Lever explicitement une UnauthorizedException permet d'homogénéiser le statut 401."
+                }
+              ]
             },
             aiResponses: {
               "guard": "Les Guards s'exécutent après les middlewares, mais avant les intercepteurs et le contrôleur de route.",
@@ -1921,14 +2389,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel mécanisme réseau empêche un site pirate (ex: site-pirate.com) de lire les réponses de votre API NestJS privée depuis un navigateur client ?",
-              options: [
-                "Le fichier .env",
-                "La politique CORS (Cross-Origin Resource Sharing)",
-                "L'utilisation de bcrypt"
-              ],
-              correctIndex: 1,
-              explanation: "CORS est un mécanisme de sécurité du navigateur qui restreint le partage de ressources cross-origin sauf autorisation explicite du serveur."
+              questions: [
+                {
+                  question: "Quel mécanisme réseau empêche un site pirate (ex: site-pirate.com) de lire les réponses de votre API NestJS privée depuis un navigateur client ?",
+                  options: [
+                    "Le fichier .env",
+                    "La politique CORS (Cross-Origin Resource Sharing)",
+                    "L'utilisation de bcrypt"
+                  ],
+                  correctIndex: 1,
+                  explanation: "CORS est un mécanisme de sécurité du navigateur qui restreint le partage de ressources cross-origin sauf autorisation explicite du serveur."
+                },
+                {
+                  question: "Comment configure-t-on le CORS dans un serveur d'API NestJS ?",
+                  options: [
+                    "En appelant app.enableCors() avec les options d'origines autorisées dans main.ts",
+                    "En configurant le fichier schema.prisma",
+                    "En modifiant les composants Angular"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La méthode enableCors() configure le middleware interne de NestJS pour renvoyer les bons en-têtes Access-Control-Allow-Origin."
+                },
+                {
+                  question: "À quoi sert la bibliothèque Helmet installée sur le serveur NestJS ?",
+                  options: [
+                    "À compiler le code TypeScript",
+                    "À injecter automatiquement des en-têtes HTTP de sécurité (CSP, X-Frame-Options) pour durcir le serveur contre les failles courantes",
+                    "À accélérer les requêtes SQL vers Neon.tech"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Helmet désactive certains en-têtes informatifs (ex: X-Powered-By) et en configure d'autres pour empêcher les attaques XSS et de clickjacking."
+                }
+              ]
             },
             aiResponses: {
               "cors": "Le protocole CORS permet d'indiquer au navigateur quelles origines sont habilitées à lire vos réponses d'API.",
@@ -1951,14 +2443,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle classe fournie par le package @nestjs/testing sert à compiler un module virtuel en mémoire pour exécuter des tests unitaires ?",
-              options: [
-                "TestingModule",
-                "JestModule",
-                "PrismaClient"
-              ],
-              correctIndex: 0,
-              explanation: "La classe TestingModule compile un conteneur d'injection virtuel en mémoire, idéal pour isoler et tester chaque classe séparément."
+              questions: [
+                {
+                  question: "Quelle classe fournie par le package @nestjs/testing sert à compiler un module virtuel en mémoire pour exécuter des tests unitaires ?",
+                  options: [
+                    "TestingModule",
+                    "JestModule",
+                    "PrismaClient"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La classe TestingModule compile un conteneur d'injection virtuel en mémoire, idéal pour isoler et tester chaque classe séparément."
+                },
+                {
+                  question: "Que signifie 'mocker' (simuler) un fournisseur (provider) lors d'un test ?",
+                  options: [
+                    "Le supprimer de l'application",
+                    "Remplacer son implémentation réelle (ex: appels PostgreSQL réseau) par un substitut factice contrôlé pour accélérer et isoler le test",
+                    "Le crypter"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le mock isole le composant testé. On remplace ainsi la base de données réelle par des tableaux en mémoire pour valider uniquement la logique algorithmique."
+                },
+                {
+                  question: "Quel outil de test par défaut est préconfiguré dans tous les projets NestJS ?",
+                  options: [
+                    "Mocha",
+                    "Jest",
+                    "Cypress"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Jest est préinstallé et configuré par NestJS. Il lance les fichiers d'assertions *.spec.ts."
+                }
+              ]
             },
             aiResponses: {
               "jest": "Jest est le framework de tests par défaut de NestJS pour exécuter vos assertions.",
@@ -1989,14 +2505,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle propriété du décorateur @Component indique à Angular que le composant est autonome et n'a pas besoin d'être déclaré dans un NgModule ?",
-              options: [
-                "imports: []",
-                "standalone: true",
-                "selector: 'app-root'"
-              ],
-              correctIndex: 1,
-              explanation: "En passant 'standalone: true', le composant peut être directement importé et utilisé sans déclaration intermédiaire dans un module classique."
+              questions: [
+                {
+                  question: "Quelle propriété du décorateur @Component indique à Angular que le composant est autonome et n'a pas besoin d'être déclaré dans un NgModule ?",
+                  options: [
+                    "imports: []",
+                    "standalone: true",
+                    "selector: 'app-root'"
+                  ],
+                  correctIndex: 1,
+                  explanation: "En passant 'standalone: true', le composant peut être directement importé et utilisé sans déclaration intermédiaire dans un module classique."
+                },
+                {
+                  question: "Où importe-t-on les modules de formulaires ou les directives nécessaires au gabarit HTML d'un composant Standalone ?",
+                  options: [
+                    "Dans le fichier main.ts",
+                    "Directement dans le tableau 'imports' de son décorateur @Component",
+                    "Dans le fichier index.html"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le tableau 'imports' du composant standalone déclare localement toutes ses dépendances visuelles et structurelles."
+                },
+                {
+                  question: "Quel est le rôle de la propriété 'selector' dans le décorateur @Component ?",
+                  options: [
+                    "Définir la route URL de la page",
+                    "Définir le nom de la balise HTML personnalisée sous laquelle le composant sera instancié (ex: <app-card>)",
+                    "Configurer l'accès à la BDD"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le selector (ex: 'app-root') est la balise HTML personnalisée que vous insérez pour afficher le template du composant."
+                }
+              ]
             },
             aiResponses: {
               "standalone": "Les composants Standalone simplifient le développement Angular en supprimant le besoin des fichiers d'architecture NgModule.",
@@ -2071,14 +2611,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Dans le nouveau Control Flow d'Angular (@for), quel paramètre est obligatoire pour optimiser les performances de rendu du DOM ?",
-              options: [
-                "track",
-                "let i = index",
-                "standalone"
-              ],
-              correctIndex: 0,
-              explanation: "Le paramètre 'track' indique à Angular quelle propriété unique (comme l'id) utiliser pour suivre les éléments du tableau dans le DOM."
+              questions: [
+                {
+                  question: "Dans le nouveau Control Flow d'Angular (@for), quel paramètre est obligatoire pour optimiser les performances de rendu du DOM ?",
+                  options: [
+                    "track",
+                    "let i = index",
+                    "standalone"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Le paramètre 'track' indique à Angular quelle propriété unique (comme l'id) utiliser pour suivre les éléments du tableau dans le DOM."
+                },
+                {
+                  question: "Quel bloc optionnel peut être ajouté directement à la suite du '@for' pour gérer le cas où le tableau est vide ?",
+                  options: [
+                    "@else",
+                    "@empty",
+                    "@void"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le bloc @empty est une nouveauté majeure d'Angular 17, s'exécutant automatiquement si la liste fournie au @for est vide ou nulle."
+                },
+                {
+                  question: "Dans l'ancienne syntaxe d'Angular, quelle était la directive structurelle utilisée pour masquer ou afficher un élément du DOM ?",
+                  options: [
+                    "*ngFor",
+                    "*ngIf",
+                    "[ngClass]"
+                  ],
+                  correctIndex: 1,
+                  explanation: "*ngIf était la directive structurelle historique d'Angular pour masquer ou injecter dynamiquement des portions de DOM."
+                }
+              ]
             },
             aiResponses: {
               "control flow": "La syntaxe @if / @for d'Angular 17+ offre de meilleures performances par rapport aux anciennes directives *ngIf/*ngFor.",
@@ -2093,7 +2657,7 @@
             detail: "Concevoir un layout adaptatif à l'aide des points d'arrêt (breakpoints) de Bootstrap 5.",
             course: `
               <div class="course-text">
-                <p>Dans l'approche Mobile-First, la mise en page doit s'adapter en fonction de la résolution de l'écran.</p>
+                <p>Dans l'approche Mobile-First, la mise en page doit s'adapter en fonction de la largeur de l'écran.</p>
                 <p>On s'appuie pour cela sur les **Media Queries** CSS ou sur les points d'arrêt (**Breakpoints**) natifs de la grille Bootstrap 5 :</p>
                 <ul class="course-list">
                   <li><code>col-12</code> : Largeur complète (100%) sur écran mobile (valeur par défaut).</li>
@@ -2106,14 +2670,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel point d'arrêt Bootstrap 5 (Breakpoint) correspond aux écrans d'une largeur supérieure ou égale à 768 pixels (tablettes) ?",
-              options: [
-                "sm (small)",
-                "md (medium)",
-                "lg (large)"
-              ],
-              correctIndex: 1,
-              explanation: "Le préfixe 'md' de Bootstrap 5 correspond aux tablettes et petits écrans horizontaux à partir de 768px."
+              questions: [
+                {
+                  question: "Quel point d'arrêt Bootstrap 5 (Breakpoint) correspond aux écrans d'une largeur supérieure ou égale à 768 pixels (tablettes) ?",
+                  options: [
+                    "sm (small)",
+                    "md (medium)",
+                    "lg (large)"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le préfixe 'md' de Bootstrap 5 correspond aux tablettes et petits écrans horizontaux à partir de 768px."
+                },
+                {
+                  question: "Dans Bootstrap 5, combien de colonnes virtuelles composent la largeur maximale d'une ligne (.row) ?",
+                  options: [
+                    "8 colonnes",
+                    "12 colonnes",
+                    "16 colonnes"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La grille de Bootstrap 5 est basée sur un système de 12 colonnes divisibles de façon flexible (ex: 2 colonnes de largeur 6)."
+                },
+                {
+                  question: "Quelle classe Bootstrap 5 permet d'espacer horizontalement et verticalement les colonnes au sein d'une ligne (.row) ?",
+                  options: [
+                    "gap-*",
+                    "g-* (ex: g-3)",
+                    "gutter-*"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Les classes de 'gutters' (ex: g-3, gx-2, gy-4) définissent l'espacement et les marges internes entre les colonnes Bootstrap."
+                }
+              ]
             },
             aiResponses: {
               "media query": "Permet de conditionner l'application des règles de style CSS à la largeur physique de la fenêtre de lecture.",
@@ -2138,14 +2726,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle stratégie de détection de changements évite d'inspecter un composant Angular tant que ses propriétés d'entrées (@Input) ne changent pas ?",
-              options: [
-                "ChangeDetectionStrategy.Default",
-                "ChangeDetectionStrategy.OnPush",
-                "Zone.js Strategy"
-              ],
-              correctIndex: 1,
-              explanation: "La stratégie OnPush permet de désactiver la détection de changements par défaut de Zone.js pour optimiser les performances de rendu."
+              questions: [
+                {
+                  question: "Quelle stratégie de détection de changements évite d'inspecter un composant Angular tant que ses propriétés d'entrées (@Input) ne changent pas ?",
+                  options: [
+                    "ChangeDetectionStrategy.Default",
+                    "ChangeDetectionStrategy.OnPush",
+                    "Zone.js Strategy"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La stratégie OnPush permet de désactiver la détection de changements par défaut de Zone.js pour optimiser les performances de rendu."
+                },
+                {
+                  question: "Quel mécanisme standard d'Angular intercepte tous les appels asynchrones (timers, requêtes HTTP) pour notifier le cycle de détection ?",
+                  options: [
+                    "Zone.js",
+                    "HttpClient",
+                    "PrismaService"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Zone.js crée un contexte d'exécution global autour d'Angular qui intercepte les retours asynchrones pour planifier les rafraîchissements."
+                },
+                {
+                  question: "Quel est le hook de détection appelé immédiatement après la vérification des liaisons d'entrées (@Input) ?",
+                  options: [
+                    "ngOnInit",
+                    "ngOnChanges",
+                    "ngAfterViewInit"
+                  ],
+                  correctIndex: 1,
+                  explanation: "ngOnChanges() est appelé dès qu'Angular détecte un changement de valeur sur l'une des propriétés décorées de @Input()."
+                }
+              ]
             },
             aiResponses: {
               "zone.js": "Zone.js est la bibliothèque qui surveille les tâches asynchrones d'Angular pour planifier les rafraîchissements.",
@@ -2178,14 +2790,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel objet Angular doit-on instancier et associer au décorateur @Output() pour émettre un événement vers le composant parent ?",
-              options: [
-                "EventEmitter",
-                "BehaviorSubject",
-                "HttpClient"
-              ],
-              correctIndex: 0,
-              explanation: "EventEmitter est la classe d'Angular utilisée pour émettre des événements personnalisés depuis un composant enfant."
+              questions: [
+                {
+                  question: "Quel objet Angular doit-on instancier et associer au décorateur @Output() pour émettre un événement vers le composant parent ?",
+                  options: [
+                    "EventEmitter",
+                    "BehaviorSubject",
+                    "HttpClient"
+                  ],
+                  correctIndex: 0,
+                  explanation: "EventEmitter est la classe d'Angular utilisée pour émettre des événements personnalisés depuis un composant enfant."
+                },
+                {
+                  question: "Comment passe-t-on une valeur dynamique à une propriété d'entrée @Input() dans le template HTML du parent ?",
+                  options: [
+                    "En utilisant des accolades (ex: {{ titre }})",
+                    "En encadrant le nom de la propriété entre crochets (ex: [titre]=\"valeur\")",
+                    "En utilisant le mot-clé 'bind'"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le Property Binding [propriété]=\"variable\" lie dynamiquement un attribut de la classe du parent à l'entrée de l'enfant."
+                },
+                {
+                  question: "Quelle méthode appelle-t-on sur l'EventEmitter de l'enfant pour envoyer le signal au parent ?",
+                  options: [
+                    "send()",
+                    "emit()",
+                    "next()"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La méthode emit() déclenche la notification à l'écouteur d'événement (event binding) paramétré dans le parent."
+                }
+              ]
             },
             aiResponses: {
               "input": "@Input() rend un attribut du composant enfant accessible pour l'écriture depuis le template du parent.",
@@ -2208,14 +2844,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle classe d'Angular représente le modèle de contrôle d'un champ de saisie unique (comme un e-mail) dans un formulaire réactif ?",
-              options: [
-                "FormGroup",
-                "FormControl",
-                "FormBuilder"
-              ],
-              correctIndex: 1,
-              explanation: "FormControl encapsule la valeur, l'état de validation (valid/invalid) et l'historique d'un champ de saisie isolé."
+              questions: [
+                {
+                  question: "Quelle classe d'Angular représente le modèle de contrôle d'un champ de saisie unique (comme un e-mail) dans un formulaire réactif ?",
+                  options: [
+                    "FormGroup",
+                    "FormControl",
+                    "FormBuilder"
+                  ],
+                  correctIndex: 1,
+                  explanation: "FormControl encapsule la valeur, l'état de validation (valid/invalid) et l'historique d'un champ de saisie isolé."
+                },
+                {
+                  question: "Quelle directive lie la balise HTML <form> à l'instance de FormGroup de votre classe TypeScript ?",
+                  options: [
+                    "formControlName",
+                    "[formGroup]",
+                    "ngModel"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La directive [formGroup] associe l'élément du formulaire au modèle logique FormGroup déclaré dans votre script."
+                },
+                {
+                  question: "Où déclare-t-on les contraintes de validation (comme l'obligation de saisie) dans les formulaires réactifs ?",
+                  options: [
+                    "Dans la balise input avec l'attribut 'required'",
+                    "Directement lors de l'instanciation du FormControl dans le tableau des validateurs (ex: [Validators.required])",
+                    "Dans le fichier .env"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Dans les formulaires réactifs, la validation est codée côté TypeScript à l'aide de la classe Validators, ce qui la rend isolée et testable."
+                }
+              ]
             },
             aiResponses: {
               "reactive forms": "Les formulaires réactifs offrent un contrôle complet, asynchrone et testable sur vos saisies côté client.",
@@ -2238,14 +2898,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle option du décorateur @Injectable permet d'enregistrer le service comme un singleton disponible de manière globale dans toute l'application ?",
-              options: [
-                "standalone: true",
-                "providedIn: 'root'",
-                "inject: 'global'"
-              ],
-              correctIndex: 1,
-              explanation: "providedIn: 'root' enregistre le service dans l'injecteur racine de l'application, évitant de devoir le déclarer dans chaque composant."
+              questions: [
+                {
+                  question: "Quelle option du décorateur @Injectable permet d'enregistrer le service comme un singleton disponible de manière globale dans toute l'application ?",
+                  options: [
+                    "standalone: true",
+                    "providedIn: 'root'",
+                    "inject: 'global'"
+                  ],
+                  correctIndex: 1,
+                  explanation: "providedIn: 'root' enregistre le service dans l'injecteur racine de l'application, évitant de devoir le déclarer dans chaque composant."
+                },
+                {
+                  question: "Pourquoi est-il déconseillé d'instancier un service avec le mot-clé 'new' (ex: const s = new CourseService()) dans un composant ?",
+                  options: [
+                    "Cela provoque un crash du navigateur",
+                    "Cela contourne l'injection de dépendances, créant une instance isolée non partagée avec le reste de l'application",
+                    "Les services ne possèdent pas de constructeur"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Instancier à la main détruit le design pattern Singleton de l'injecteur d'Angular. La donnée ne serait plus partagée entre les composants."
+                },
+                {
+                  question: "Où injecte-t-on généralement les instances de services requis par un composant ?",
+                  options: [
+                    "Dans la méthode ngOnInit()",
+                    "Dans les paramètres de la fonction constructeur de la classe",
+                    "Dans le fichier index.html"
+                  ],
+                  correctIndex: 1,
+                  explanation: "L'injection se fait par le constructeur. Angular résout les types demandés et fournit les singletons lors de l'instanciation du composant."
+                }
+              ]
             },
             aiResponses: {
               "service": "Les services centralisent la logique applicative (ex: stockage en localStorage ou appels API).",
@@ -2272,14 +2956,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle méthode devez-vous appeler sur un BehaviorSubject pour émettre une nouvelle valeur dans le flux réactif ?",
-              options: [
-                "subscribe()",
-                "next()",
-                "emit()"
-              ],
-              correctIndex: 1,
-              explanation: "La méthode next() pousse la nouvelle valeur fournie dans le flux, provoquant la mise à jour immédiate de tous les écouteurs connectés."
+              questions: [
+                {
+                  question: "Quelle méthode devez-vous appeler sur un BehaviorSubject pour émettre une nouvelle valeur dans le flux réactif ?",
+                  options: [
+                    "subscribe()",
+                    "next()",
+                    "emit()"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La méthode next() pousse la nouvelle valeur fournie dans le flux, provoquant la mise à jour immédiate de tous les écouteurs connectés."
+                },
+                {
+                  question: "Quelle est la particularité d'un BehaviorSubject par rapport à un Subject classique ?",
+                  options: [
+                    "Il n'accepte que des nombres",
+                    "Il exige une valeur initiale et rejoue instantanément sa dernière valeur émise lors de toute nouvelle souscription",
+                    "Il est synchrone"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le BehaviorSubject stocke l'état courant de la donnée. Idéal pour que tout nouveau composant affiché connaisse immédiatement le profil de l'utilisateur."
+                },
+                {
+                  question: "Quelle méthode RxJS applique des transformations successives (ex: map, filter) sur un Observable ?",
+                  options: [
+                    "pipe()",
+                    "subscribe()",
+                    "then()"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La méthode pipe() enchaîne des opérateurs RxJS pour manipuler ou filtrer les données du flux de manière fluide."
+                }
+              ]
             },
             aiResponses: {
               "observable": "Un flux asynchrone sur lequel on peut s'abonner pour écouter les émissions de données.",
@@ -2302,18 +3010,42 @@
                 </ul>
               </div>
             `,
-            example: `// Désinscription propre RxJS (prevent memory leak) :\nimport { Component, OnInit, OnDestroy } from '@angular/core';\nimport { Subscription } from 'rxjs';\nimport { CourseService } from './course.service';\n\n@Component({ ... })\nexport class CourseListComponent implements OnInit, OnDestroy {\n  private sub!: Subscription;\n  constructor(private service: CourseService) {}\n\n  ngOnInit() {\n    this.sub = this.service.isLoggedIn.subscribe(val => console.log(val));\n  }\n\n  ngOnDestroy() {\n    this.sub.unsubscribe(); // Libération de la mémoire lors de la fermeture de la page\n  }\n}`,
+            example: `// Désinscription propre RxJS (prevent memory leak) :\nimport { Component, OnInit, OnDestroy } from '@angular/core';\nimport { Subscription } from 'rxjs';\nimport { CourseService } from './course.service';\n\n@Component({ selector: 'app-list', standalone: true, template: '' })\nexport class CourseListComponent implements OnInit, OnDestroy {\n  private sub!: Subscription;\n  constructor(private service: CourseService) {}\n\n  ngOnInit() {\n    this.sub = this.service.isLoggedIn.subscribe(val => console.log(val));\n  }\n\n  ngOnDestroy() {\n    this.sub.unsubscribe(); // Libération de la mémoire lors de la fermeture de la page\n  }\n}`,
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Pourquoi est-il crucial de se désabonner (unsubscribe) des Observables manuels dans la méthode ngOnDestroy ?",
-              options: [
-                "Pour forcer le serveur NestJS à fermer la connexion PostgreSQL",
-                "Pour libérer la mémoire vive et éviter que des écouteurs inactifs ne continuent de s'exécuter en tâche de fond (fuite de mémoire)",
-                "Pour désactiver le style CSS de la page"
-              ],
-              correctIndex: 1,
-              explanation: "Les abonnements non libérés restent actifs en mémoire après la fermeture de la page, exécutant inutilement les fonctions et ralentissant le navigateur."
+              questions: [
+                {
+                  question: "Pourquoi est-il crucial de se désabonner (unsubscribe) des Observables manuels dans la méthode ngOnDestroy ?",
+                  options: [
+                    "Pour forcer le serveur NestJS à fermer la connexion PostgreSQL",
+                    "Pour libérer la mémoire vive et éviter que des écouteurs inactifs ne continuent de s'exécuter en tâche de fond (fuite de mémoire)",
+                    "Pour désactiver le style CSS de la page"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Les abonnements non libérés restent actifs en mémoire après la fermeture de la page, exécutant inutilement les fonctions et ralentissant le navigateur."
+                },
+                {
+                  question: "Quelle méthode est appelée automatiquement par Angular dès qu'un paramètre d'entrée décoré par @Input() change de valeur ?",
+                  options: [
+                    "ngOnInit",
+                    "ngOnChanges",
+                    "ngOnDestroy"
+                  ],
+                  correctIndex: 1,
+                  explanation: "ngOnChanges() intercepte les modifications des propriétés d'entrée du composant et permet d'y réagir programmatiquement."
+                },
+                {
+                  question: "Quelle interface TypeScript doit implémenter votre classe pour pouvoir utiliser le hook 'ngOnInit()' ?",
+                  options: [
+                    "OnInit",
+                    "OnDestroy",
+                    "OnChanges"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La classe doit implémenter l'interface 'OnInit' importée de '@angular/core' pour déclarer la méthode correspondante."
+                }
+              ]
             },
             aiResponses: {
               "ngoninit": "Hook idéal d'initialisation du composant après l'évaluation des propriétés d'entrée.",
@@ -2344,14 +3076,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel est le type de retour des méthodes (get, post) du service HttpClient d'Angular ?",
-              options: [
-                "Une Promise JavaScript",
-                "Un Observable RxJS",
-                "Une chaîne JSON"
-              ],
-              correctIndex: 1,
-              explanation: "Toutes les méthodes de HttpClient d'Angular renvoient des Observables RxJS, permettant de gérer les requêtes comme des flux réactifs."
+              questions: [
+                {
+                  question: "Quel est le type de retour des méthodes (get, post) du service HttpClient d'Angular ?",
+                  options: [
+                    "Une Promise JavaScript",
+                    "Un Observable RxJS",
+                    "Une chaîne JSON"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Toutes les méthodes de HttpClient d'Angular renvoient des Observables RxJS, permettant de gérer les requêtes comme des flux réactifs."
+                },
+                {
+                  question: "Dans quel fichier de configuration de l'application Angular 15+ standalone doit-on appeler 'provideHttpClient()' pour rendre le service disponible ?",
+                  options: [
+                    "app.config.ts",
+                    "index.html",
+                    "styles.css"
+                  ],
+                  correctIndex: 0,
+                  explanation: "app.config.ts configure les providers globaux de l'application standalone. On y enregistre provideHttpClient()."
+                },
+                {
+                  question: "Comment typé-t-on le résultat retourné par un appel HttpClient.get() ?",
+                  options: [
+                    "En passant le type générique en argument (ex: get<User[]>('/api/users'))",
+                    "Le typage est automatique et magique",
+                    "On ne peut pas typer les retours HTTP"
+                  ],
+                  correctIndex: 0,
+                  explanation: "L'utilisation d'arguments génériques (ex: get<T>) applique le type TypeScript à la valeur résolue par l'Observable."
+                }
+              ]
             },
             aiResponses: {
               "httpclient": "HttpClient est le service d'Angular gérant les requêtes HTTP asynchrones en s'appuyant sur RxJS.",
@@ -2380,14 +3136,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Pourquoi est-il nécessaire de cloner (req.clone) l'objet de requête à l'intérieur d'un intercepteur HTTP ?",
-              options: [
-                "Parce que l'objet de requête d'origine est immuable (read-only) par conception pour éviter les effets de bord",
-                "Pour doubler la vitesse d'envoi de la requête",
-                "Pour chiffrer les données automatiquement"
-              ],
-              correctIndex: 0,
-              explanation: "Par sécurité et intégrité de flux, les requêtes HTTP d'Angular sont immuables. On doit les cloner pour y appliquer des modifications d'en-têtes."
+              questions: [
+                {
+                  question: "Pourquoi est-il nécessaire de cloner (req.clone) l'objet de requête à l'intérieur d'un intercepteur HTTP ?",
+                  options: [
+                    "Parce que l'objet de requête d'origine est immuable (read-only) par conception pour éviter les effets de bord",
+                    "Pour doubler la vitesse d'envoi de la requête",
+                    "Pour chiffrer les données automatiquement"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Par sécurité et intégrité de flux, les requêtes HTTP d'Angular sont immuables. On doit les cloner pour y appliquer des modifications d'en-têtes."
+                },
+                {
+                  question: "Quel paramètre de l'intercepteur transmet la requête (modifiée ou non) au prochain intercepteur ou au moteur d'envoi ?",
+                  options: [
+                    "req",
+                    "next",
+                    "handler"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La fonction 'next(req)' transmet l'objet de requête à l'intercepteur suivant dans la chaîne d'exécution."
+                },
+                {
+                  question: "Où configure-t-on l'intercepteur pour qu'il soit exécuté sur vos appels HttpClient ?",
+                  options: [
+                    "Dans la balise html",
+                    "Dans la fonction provideHttpClient(withInterceptors([authInterceptor])) dans app.config.ts",
+                    "Dans le contrôleur de route"
+                  ],
+                  correctIndex: 1,
+                  explanation: "L'enregistrement des intercepteurs fonctionnels se fait dans app.config.ts lors de la configuration du client HTTP."
+                }
+              ]
             },
             aiResponses: {
               "intercepteur": "Les intercepteurs simplifient le code en centralisant l'injection du token d'authentification.",
@@ -2413,14 +3193,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Pourquoi l'utilisation de cookies avec l'attribut HttpOnly est-elle plus sécurisée que le LocalStorage pour stocker un token d'authentification ?",
-              options: [
-                "Parce qu'ils prennent moins de place en mémoire",
-                "Parce que le code JavaScript client ne peut pas y accéder, empêchant le vol de session par des scripts injectés (failles XSS)",
-                "Parce qu'ils encryptent automatiquement le mot de passe de l'utilisateur"
-              ],
-              correctIndex: 1,
-              explanation: "L'attribut HttpOnly empêche l'accès direct aux cookies via document.cookie en JavaScript, les rendant inaccessibles aux scripts XSS malveillants."
+              questions: [
+                {
+                  question: "Pourquoi l'utilisation de cookies avec l'attribut HttpOnly est-elle plus sécurisée que le LocalStorage pour stocker un token d'authentification ?",
+                  options: [
+                    "Parce qu'ils prennent moins de place en mémoire",
+                    "Parce que le code JavaScript client ne peut pas y accéder, empêchant le vol de session par des scripts injectés (failles XSS)",
+                    "Parce qu'ils encryptent automatiquement le mot de passe de l'utilisateur"
+                  ],
+                  correctIndex: 1,
+                  explanation: "L'attribut HttpOnly empêche l'accès direct aux cookies via document.cookie en JavaScript, les rendant inaccessibles aux scripts XSS malveillants."
+                },
+                {
+                  question: "Quel est le risque de sécurité lié au stockage du token dans le LocalStorage ?",
+                  options: [
+                    "La perte de connexion internet",
+                    "L'extraction du token par des scripts tiers malveillants via une faille XSS",
+                    "Le crash du serveur NestJS"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le LocalStorage est lisible par n'importe quel script JavaScript s'exécutant sur la page, ce qui permet à un attaquant d'usurper l'identité."
+                },
+                {
+                  question: "Quel drapeau de cookie de production garantit qu'il transite uniquement via HTTPS ?",
+                  options: [
+                    "httpOnly",
+                    "secure",
+                    "sameSite"
+                  ],
+                  correctIndex: 1,
+                  explanation: "L'option 'secure: true' force le navigateur à envoyer le cookie uniquement lors des requêtes cryptées HTTPS."
+                }
+              ]
             },
             aiResponses: {
               "xss": "XSS (Cross-Site Scripting) est une faille permettant d'injecter et d'exécuter des scripts JS malveillants sur un site de confiance.",
@@ -2443,14 +3247,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle fonction d'Angular permet d'injecter un service (comme Router) à l'intérieur d'un Guard fonctionnel sans passer par un constructeur ?",
-              options: [
-                "inject()",
-                "getService()",
-                "use()"
-              ],
-              correctIndex: 0,
-              explanation: "La fonction inject() permet d'accéder au conteneur d'injection d'Angular au sein des fonctions de guards ou d'intercepteurs."
+              questions: [
+                {
+                  question: "Quelle fonction d'Angular permet d'injecter un service (comme Router) à l'intérieur d'un Guard fonctionnel sans passer par un constructeur ?",
+                  options: [
+                    "inject()",
+                    "getService()",
+                    "use()"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La fonction inject() permet d'accéder au conteneur d'injection d'Angular au sein des fonctions de guards ou d'intercepteurs."
+                },
+                {
+                  question: "Où associe-t-on le Guard fonctionnel pour protéger l'accès à une route ?",
+                  options: [
+                    "Dans le fichier index.html",
+                    "Dans la déclaration de la route sous la propriété 'canActivate' (ex: canActivate: [authGuard])",
+                    "Dans le décorateur @Component"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Les Guards de routage s'enregistrent dans le tableau 'canActivate' de l'objet route cible dans les configurations de routage."
+                },
+                {
+                  question: "Que doit renvoyer un Guard de routage pour autoriser la navigation de l'utilisateur ?",
+                  options: [
+                    "Le mot-clé void",
+                    "La valeur booléenne 'true' (ou un Observable résolvant à true)",
+                    "L'objet utilisateur complet"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Renvoyer 'true' autorise le changement d'URL. Renvoyer 'false' annule la navigation."
+                }
+              ]
             },
             aiResponses: {
               "guard": "Les Guards de routage sécurisent l'accès aux pages graphiques de l'application côté navigateur.",
@@ -2473,18 +3301,42 @@
                 </ul>
               </div>
             `,
-            example: `// Gestion réactive du loader dans un composant Angular :\nimport { Component } from '@angular/core';\nimport { finalize } from 'rxjs/operators';\nimport { CourseService } from './course.service';\n\n@Component({ ... })\nexport class CourseComponent {\n  loading = false;\n  constructor(private service: CourseService) {}\n\n  chargerCours() {\n    this.loading = true;\n    this.service.getCourses()\n      .pipe(finalize(() => this.loading = false)) // S'exécute après succès ou échec\n      .subscribe(res => this.courses = res);\n  }\n}`,
+            example: `// Gestion réactive du loader dans un composant Angular :\nimport { Component } from '@angular/core';\nimport { finalize } from 'rxjs/operators';\nimport { CourseService } from './course.service';\n\n@Component({ selector: 'app-list', standalone: true, template: '' })\nexport class CourseComponent {\n  loading = false;\n  courses: any[] = [];\n  constructor(private service: CourseService) {}\n\n  chargerCours() {\n    this.loading = true;\n    this.service.getCourses()\n      .pipe(finalize(() => this.loading = false)) // S'exécute après succès ou échec\n      .subscribe(res => this.courses = res);\n  }\n}`,
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quel opérateur RxJS est idéal pour exécuter une action (comme désactiver un loader) à la fin d'un flux HTTP, qu'il soit réussi ou en erreur ?",
-              options: [
-                "map",
-                "finalize",
-                "catchError"
-              ],
-              correctIndex: 1,
-              explanation: "L'opérateur finalize() s'exécute de façon certaine lorsque l'Observable se termine ou produit une erreur, idéal pour basculer les variables de chargement."
+              questions: [
+                {
+                  question: "Quel opérateur RxJS est idéal pour exécuter une action (comme désactiver un loader) à la fin d'un flux HTTP, qu'il soit réussi ou en erreur ?",
+                  options: [
+                    "map",
+                    "finalize",
+                    "catchError"
+                  ],
+                  correctIndex: 1,
+                  explanation: "L'opérateur finalize() s'exécute de façon certaine lorsque l'Observable se termine ou produit une erreur, idéal pour basculer les variables de chargement."
+                },
+                {
+                  question: "À quoi servent les composants de type 'Skeleton' dans l'UX moderne ?",
+                  options: [
+                    "À crypter le code",
+                    "À afficher une structure grise temporaire marquant la forme future du contenu pour réduire le sentiment d'attente",
+                    "À tester la base de données"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Les Skeletons miment le futur contenu, rendant le chargement plus fluide et naturel que l'affichage d'un simple écran blanc."
+                },
+                {
+                  question: "Quel opérateur RxJS permet d'intercepter les erreurs HTTP pour renvoyer un message d'alerte lisible à l'interface ?",
+                  options: [
+                    "catchError",
+                    "map",
+                    "tap"
+                  ],
+                  correctIndex: 0,
+                  explanation: "catchError() intercepte les rejets d'Observables HTTP et permet de renvoyer une valeur par défaut ou de formater une notification d'erreur."
+                }
+              ]
             },
             aiResponses: {
               "finalize": "L'opérateur RxJS qui capture la complétion d'un flux asynchrone pour y exécuter des nettoyages.",
@@ -2518,14 +3370,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Pourquoi est-il avantageux de séparer l'hébergement du Front Angular (sur Vercel) de celui du Back NestJS (sur Render) ?",
-              options: [
-                "Parce que c'est obligatoire pour le protocole HTTPS",
-                "Pour optimiser les performances (CDN pour le statique) et pouvoir mettre à l'échelle (scaler) chaque partie de manière indépendante",
-                "Pour bloquer les requêtes SQL"
-              ],
-              correctIndex: 1,
-              explanation: "Séparer le statique (Angular sur Vercel) et le dynamique (NestJS sur Render) améliore la vitesse d'affichage initiale et réduit les coûts d'hébergement."
+              questions: [
+                {
+                  question: "Pourquoi privilégier un service comme Vercel pour héberger le code Frontend plutôt que Render ?",
+                  options: [
+                    "Parce que Vercel is moins sécurisé",
+                    "Parce que Vercel est optimisé spécifiquement pour servir du contenu statique avec un CDN mondial, ce qui garantit des temps de chargement ultra-courts",
+                    "Parce que Vercel intègre sa propre base de données SQL"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Vercel distribue le code statique du Front sur des serveurs CDN situés au plus près de vos utilisateurs pour des performances de chargement optimales."
+                },
+                {
+                  question: "Quel service cloud de type PostgreSQL serverless est utilisé pour stocker nos tables de données relationnelles ?",
+                  options: [
+                    "Render",
+                    "Neon.tech",
+                    "Vercel"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Neon.tech est l'hébergeur de notre base PostgreSQL serverless, offrant des sauvegardes automatiques et un branching instantané."
+                },
+                {
+                  question: "Comment s'appelle l'outil de déploiement automatique déclenché à chaque 'git push' sur votre dépôt de code distant ?",
+                  options: [
+                    "Le déploiement continu (CD)",
+                    "L'intégration asynchrone",
+                    "Le push GitFlow"
+                  ],
+                  correctIndex: 0,
+                  explanation: "La livraison ou déploiement continu (CD) compile et met en ligne automatiquement vos modifications dès que vous fusionnez sur la branche principale."
+                }
+              ]
             },
             aiResponses: {
               "vercel": "Plateforme cloud optimisée pour le déploiement continu d'applications statiques et de frameworks front-end.",
@@ -2552,14 +3428,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Où doit-on déclarer la clé de connexion PostgreSQL (DATABASE_URL) en mode production ?",
-              options: [
-                "En la poussant en clair sur le dépôt GitHub public",
-                "Dans l'interface d'administration en ligne de l'hébergeur (Render/Vercel) dans la section Environment Variables",
-                "Dans le fichier de style CSS global"
-              ],
-              correctIndex: 1,
-              explanation: "Déclarer les secrets dans l'interface de l'hébergeur les injecte directement en mémoire au démarrage sans les exposer dans le code source."
+              questions: [
+                {
+                  question: "Où doit-on déclarer la clé de connexion PostgreSQL (DATABASE_URL) en mode production ?",
+                  options: [
+                    "En la poussant en clair sur le dépôt GitHub public",
+                    "Dans l'interface d'administration en ligne de l'hébergeur (Render/Vercel) dans la section Environment Variables",
+                    "Dans le fichier de style CSS global"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Déclarer les secrets dans l'interface de l'hébergeur les injecte directement en mémoire au démarrage sans les exposer dans le code source."
+                },
+                {
+                  question: "Pourquoi est-il obligatoire d'utiliser le protocole HTTPS en production ?",
+                  options: [
+                    "Pour masquer le code HTML de l'application",
+                    "Pour chiffrer toutes les communications réseau et empêcher l'interception des tokens d'authentification JWT",
+                    "Pour accélérer le temps de réponse"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le HTTPS protège la confidentialité des données échangées (notamment les mots de passe et les jetons de session) en cours de transport."
+                },
+                {
+                  question: "Quel autorité gratuite de certification génère automatiquement nos certificats HTTPS sur Vercel et Render ?",
+                  options: [
+                    "Let's Encrypt",
+                    "Let's Code",
+                    "Neon Certificate"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Let's Encrypt est le service gratuit et automatisé de certification SSL/TLS utilisé par la quasi-totalité des hébergeurs modernes."
+                }
+              ]
             },
             aiResponses: {
               "https": "Sécurise les requêtes réseau contre l'écoute ou le vol de données en chiffrant les échanges.",
@@ -2629,14 +3529,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Si le jury demande : 'Comment assurez-vous l'intégrité et la non-altération de l'identité de l'utilisateur connecté ?', quelle est la réponse attendue ?",
-              options: [
-                "Le mot de passe est enregistré en clair dans PostgreSQL",
-                "Nous utilisons un token JWT signé avec une clé secrète connue du seul serveur NestJS. La signature est validée par notre Guard à chaque requête",
-                "Nous stockons le token sur le dépôt GitHub public"
-              ],
-              correctIndex: 1,
-              explanation: "Le jeton JWT signé garantit la sécurité. Toute modification du payload par un utilisateur invalide sa signature cryptographique lors de l'analyse du Guard NestJS."
+              questions: [
+                {
+                  question: "Si le jury demande : 'Comment assurez-vous l'intégrité et la non-altération de l'identité de l'utilisateur connecté ?', quelle est la réponse attendue ?",
+                  options: [
+                    "Le mot de passe est enregistré en clair dans PostgreSQL",
+                    "Nous utilisons un token JWT signé avec une clé secrète connue du seul serveur NestJS. La signature est validée par notre Guard à chaque requête",
+                    "Nous stockons le token sur le dépôt GitHub public"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le jeton JWT signé garantit la sécurité. Toute modification du payload par un utilisateur invalide sa signature cryptographique lors de l'analyse du Guard NestJS."
+                },
+                {
+                  question: "Comment justifier le choix de l'ORM Prisma face à des requêtes SQL manuelles ?",
+                  options: [
+                    "Prisma est plus facile d'utilisation et sécurise les échanges d'office contre les failles d'injection SQL",
+                    "Prisma permet de se passer de base de données",
+                    "Prisma accélère l'écriture CSS"
+                  ],
+                  correctIndex: 0,
+                  explanation: "Prisma apporte la sécurité (requêtes paramétrées) et la productivité grâce au typage TypeScript auto-généré."
+                },
+                {
+                  question: "Quelle est la posture recommandée si le jury vous pose une question sur un bug ou une notion technique que vous ne maîtrisez pas ?",
+                  options: [
+                    "Inventer une réponse fausse de manière assurée",
+                    "Reconnaître ses limites honnêtement, expliquer comment vous chercheriez la réponse dans la documentation et rebondir sur un aspect connexe maîtrisé",
+                    "Garder le silence"
+                  ],
+                  correctIndex: 1,
+                  explanation: "L'honnêteté intellectuelle et la capacité à trouver des solutions (démarche de recherche) sont très valorisées par les jurys professionnels."
+                }
+              ]
             },
             aiResponses: {
               "jury": "Le jury cherche à évaluer votre posture professionnelle et la justification rationnelle de vos choix de développement.",
@@ -2664,14 +3588,38 @@
             diagram: "none",
             activity: {
               type: "quiz",
-              question: "Quelle part de présentation doit être dédiée aux aspects d'analyse fonctionnelle (UML, MCD) et de développement technique ?",
-              options: [
-                "Environ 10% du temps total",
-                "Environ 70% du temps total (35% Conception / 35% Développement)",
-                "95% du temps"
-              ],
-              correctIndex: 1,
-              explanation: "Le jury évalue vos capacités de concepteur et de développeur. Consacrer les 2/3 du temps à l'analyse et à la technique valorise votre profil d'Analyste-Développeur."
+              questions: [
+                {
+                  question: "Quelle part de présentation doit être dédiée aux aspects d'analyse fonctionnelle (UML, MCD) et de développement technique ?",
+                  options: [
+                    "Environ 10% du temps total",
+                    "Environ 70% du temps total (35% Conception / 35% Développement)",
+                    "95% du temps"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Le jury évalue vos capacités de concepteur et de développeur. Consacrer les 2/3 du temps à l'analyse et à la technique valorise votre profil d'Analyste-Développeur."
+                },
+                {
+                  question: "Quel élément ne doit jamais être oublié lors des conclusions de votre soutenance ?",
+                  options: [
+                    "Le coût financier exact du serveur de production",
+                    "Le bilan critique des compétences acquises, les limites de l'application livrée et les perspectives d'évolution future",
+                    "La liste de tous les commits Git"
+                  ],
+                  correctIndex: 1,
+                  explanation: "Présenter les limites et les évolutions futures démontre votre esprit critique et votre recul professionnel sur le travail accompli."
+                },
+                {
+                  question: "Quelle précaution prendre avant de lancer la démonstration de l'application en direct (live demo) devant le jury ?",
+                  options: [
+                    "Aucune, tester en ligne de commande directement",
+                    "Préparer un jeu de données de test en base à l'avance et tester sa connexion internet pour limiter l'imprévu",
+                    "Couper l'accès au serveur"
+                  ],
+                  correctIndex: 1,
+                  explanation: "La démonstration est un moment stressant. Préparer des données d'avance et valider la connexion évite 'l'effet démo' (panne inattendue)."
+                }
+              ]
             },
             aiResponses: {
               "soutenance": "Répétez votre présentation avec un chronomètre pour maîtriser le temps alloué.",
@@ -2688,7 +3636,7 @@
        ------------------------------------------------------------- */
     let currentWeekId = 1;
     let validatedSessions = new Set();
-    const STORAGE_KEY = 'tfe_progress_sessions_v4'; // Clé v4 pour la nouvelle stack officielle
+    const STORAGE_KEY = 'tfe_progress_sessions_v5'; // Clé v5 pour la nouvelle stack officielle et quiz stepper
 
     /* -------------------------------------------------------------
        ÉLÉMENTS DU DOM
@@ -3031,36 +3979,52 @@
     };
 
     /* -------------------------------------------------------------
-       RENDU DES ACTIVITÉS INTERACTIVES
+       RENDU DES ACTIVITÉS INTERACTIVES (STEPPER MULTI-QUESTIONS)
        ------------------------------------------------------------- */
     const renderActivity = (day) => {
       const act = day.activity;
       
       if (act && act.type === "quiz") {
-        return `
+        let html = `
           <div class="activity-container" id="act-box-${day.id}">
             <div class="activity-title">
-              Activité de Validation : Quiz
+              Activité de Validation : Quiz (${act.questions.length} questions)
             </div>
-            <p style="font-size: 13px; margin-bottom: 12px; font-weight:500;">${act.question}</p>
-            <div class="quiz-options">
-              ${act.options.map((opt, i) => `
-                <button class="quiz-opt-btn" onclick="validateQuizAnswer(this, '${day.id}', ${i}, ${act.correctIndex}, '${encodeURIComponent(act.explanation)}')">
-                  ${opt}
-                </button>
-              `).join('')}
-            </div>
-            <div class="quiz-feedback" id="feedback-${day.id}"></div>
-          </div>
         `;
+        
+        act.questions.forEach((q, qIndex) => {
+          html += `
+            <div class="quiz-question-step" id="step-${day.id}-${qIndex}" style="${qIndex === 0 ? '' : 'display:none;'}">
+              <span style="font-size: 11px; color: var(--text-muted); font-weight:600;">Question ${qIndex + 1} sur ${act.questions.length} :</span>
+              <p style="font-size: 13px; margin-top: 4px; margin-bottom: 12px; font-weight:500;">${q.question}</p>
+              <div class="quiz-options">
+                ${q.options.map((opt, i) => `
+                  <button class="quiz-opt-btn" onclick="validateStepAnswer(this, '${day.id}', ${qIndex}, ${i}, ${q.correctIndex}, '${encodeURIComponent(q.explanation)}')">
+                    ${opt}
+                  </button>
+                `).join('')}
+              </div>
+              <div class="quiz-feedback" id="feedback-${day.id}-${qIndex}"></div>
+              <div style="margin-top: 12px; display: none;" id="next-btn-box-${day.id}-${qIndex}">
+                <button class="bcrypt-btn" style="padding: 6px 12px; font-size:11px;" onclick="goToNextQuizStep('${day.id}', ${qIndex}, ${act.questions.length})">
+                  ${qIndex === act.questions.length - 1 ? 'Terminer le Quiz' : 'Question suivante ➔'}
+                </button>
+              </div>
+            </div>
+          `;
+        });
+        
+        html += `</div>`;
+        return html;
       }
       
       return act ? act.html : `<p style="font-size: 12px; color: var(--text-dark);">Aucun exercice pour ce cours.</p>`;
     };
 
-    /* Validation du Quiz */
-    window.validateQuizAnswer = (btn, dayId, selected, correct, encodedExplanation) => {
-      const feedbackBox = document.getElementById(`feedback-${dayId}`);
+    /* Validation de l'Étape de Quiz */
+    window.validateStepAnswer = (btn, dayId, qIndex, selected, correct, encodedExplanation) => {
+      const feedbackBox = document.getElementById(`feedback-${dayId}-${qIndex}`);
+      const nextBtnBox = document.getElementById(`next-btn-box-${dayId}-${qIndex}`);
       const options = btn.parentElement.querySelectorAll('.quiz-opt-btn');
       const explanation = decodeURIComponent(encodedExplanation);
       
@@ -3070,12 +4034,7 @@
         btn.classList.add('correct');
         feedbackBox.className = 'quiz-feedback success';
         feedbackBox.innerHTML = `<strong>Correct.</strong> ${explanation}`;
-        
-        const chk = document.getElementById(`chk-${dayId}`);
-        if (chk && !chk.checked) {
-          chk.checked = true;
-          toggleSessionValidation(dayId);
-        }
+        nextBtnBox.style.display = 'block';
       } else {
         btn.classList.add('incorrect');
         options[correct].classList.add('correct');
@@ -3084,6 +4043,23 @@
         feedbackBox.style.color = '#f87171';
         feedbackBox.style.display = 'block';
         feedbackBox.innerHTML = `<strong>Incorrect.</strong> ${explanation}`;
+        nextBtnBox.style.display = 'block';
+      }
+    };
+
+    /* Passage à la question suivante */
+    window.goToNextQuizStep = (dayId, qIndex, totalQuestions) => {
+      if (qIndex === totalQuestions - 1) {
+        // Validation finale du cours
+        const chk = document.getElementById(`chk-${dayId}`);
+        if (chk && !chk.checked) {
+          chk.checked = true;
+          toggleSessionValidation(dayId);
+        }
+        alert("Félicitations ! Vous avez validé les 3 questions de l'activité.");
+      } else {
+        document.getElementById(`step-${dayId}-${qIndex}`).style.display = 'none';
+        document.getElementById(`step-${dayId}-${qIndex + 1}`).style.display = 'block';
       }
     };
 
@@ -3149,7 +4125,7 @@
       `;
     };
 
-    /* Bcrypt (NestJS simulation) */
+    /* Bcrypt */
     window.runBcryptSimulator = () => {
       const pwd = document.getElementById('bcrypt-pwd').value;
       const output = document.getElementById('bcrypt-result-output');
