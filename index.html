@@ -1,0 +1,3367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TFE Hub - Angular, NestJS & Prisma</title>
+  
+  <!-- Polices d'écriture épurées (Inter pour l'interface, Fira Code pour le code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------------------------------------------
+       VARIABLES DE DESIGN (Thème Monochrome Sombre Type Vercel)
+       ------------------------------------------------------------- */
+    :root {
+      --bg-color: #000000;       /* Fond noir pur */
+      --card-bg: #09090b;        /* Zinc 950 */
+      --card-border: #27272a;    /* Zinc 800 (très fin) */
+      --text-main: #ffffff;      /* Blanc pur */
+      --text-muted: #a1a1aa;     /* Zinc 400 */
+      --text-dark: #71717a;      /* Zinc 500 */
+      --accent-cyan: #38bdf8;    /* Cyan discret pour surbrillances */
+      --success-green: #10b981;  /* Émeraude pour validation */
+      --error-red: #ef4444;      /* Rouge pour alertes */
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+      --transition-speed: 0.2s;
+    }
+
+    /* -------------------------------------------------------------
+       STYLES GLOBAUX ÉPURÉS
+       ------------------------------------------------------------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 60px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* -------------------------------------------------------------
+       HEADER COLLANT MINIMALISTE (Barre de progression intégrée en bordure)
+       ------------------------------------------------------------- */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 16px 0;
+      position: relative;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-svg {
+      width: 20px;
+      height: 20px;
+      fill: #ffffff;
+    }
+
+    .app-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .progress-stats-top {
+      font-size: 12px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-muted);
+    }
+
+    .progress-stats-top span {
+      color: var(--text-main);
+    }
+
+    /* Barre de progression : ligne ultra-fine de 2px sous le header */
+    .progress-bar-bg {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: transparent;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background-color: #ffffff; /* Progression blanche sobre */
+      transition: width 0.3s ease;
+    }
+
+    /* -------------------------------------------------------------
+       NAVIGATION PAR SEMAINE (Lien plat, sans pilule)
+       ------------------------------------------------------------- */
+    .nav-tabs-wrapper {
+      margin: 24px 0 16px 0;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .nav-tabs {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-button {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition-speed);
+      border-radius: 0;
+    }
+
+    .tab-button:hover {
+      color: var(--text-main);
+    }
+
+    .tab-button.active {
+      color: var(--text-main);
+      border-bottom-color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* En-tête de semaine */
+    .week-header {
+      margin-bottom: 20px;
+    }
+
+    .week-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .week-subtitle {
+      font-size: 11px;
+      color: var(--text-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    /* -------------------------------------------------------------
+       CARTES ACCORDÉONS (Design minimaliste sans arrondis excessifs)
+       ------------------------------------------------------------- */
+    .cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      transition: border-color var(--transition-speed);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(6px);
+      animation: fadeInUp 0.3s ease forwards;
+    }
+
+    .card.validated {
+      border-color: #3f3f46;
+    }
+
+    .card-summary-header {
+      padding: 18px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-day-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .card.validated .card-day-badge {
+      color: var(--success-green);
+    }
+
+    .card-expand-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .card-expand-indicator svg {
+      width: 10px;
+      height: 10px;
+      fill: currentColor;
+      transition: transform var(--transition-speed);
+    }
+
+    .card.expanded .card-expand-indicator svg {
+      transform: rotate(180deg);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    .card-short-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    /* -------------------------------------------------------------
+       ZONE DÉTAILS EXTENSIBLE
+       ------------------------------------------------------------- */
+    .card-details-wrapper {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-top: 1px solid transparent;
+    }
+
+    .card.expanded .card-details-wrapper {
+      max-height: 3000px;
+      border-top-color: var(--card-border);
+    }
+
+    .card-details-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Onglets de contenu interne */
+    .details-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--card-border);
+      gap: 12px;
+      overflow-x: auto;
+    }
+
+    .details-tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      padding: 8px 0;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      border-radius: 0;
+    }
+
+    .details-tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .details-tab-btn.active {
+      color: var(--text-main);
+      border-bottom-color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* -------------------------------------------------------------
+       ONGLET 1 : LE COURS (Riche, Documenté, Épuré)
+       ------------------------------------------------------------- */
+    .course-text {
+      font-size: 13.5px;
+      color: #e4e4e7;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .course-text p strong {
+      color: var(--text-main);
+    }
+
+    .course-subtitle-internal {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 8px;
+    }
+
+    .course-list {
+      margin-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .course-list li {
+      font-size: 13px;
+    }
+
+    /* Tableaux épurés */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin: 12px 0;
+      border: 1px solid var(--card-border);
+    }
+
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .doc-table th, .doc-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .doc-table th {
+      background-color: #121214;
+      color: var(--text-main);
+      font-weight: 600;
+      border-bottom-width: 2px;
+    }
+
+    .doc-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* -------------------------------------------------------------
+       ONGLET 2 : CODE & SCHÉMAS
+       ------------------------------------------------------------- */
+    .example-code-block {
+      background-color: #040405;
+      border: 1px solid var(--card-border);
+      padding: 14px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #e4e4e7;
+      white-space: pre;
+      line-height: 1.4;
+    }
+
+    .diagram-container {
+      margin-top: 14px;
+      background-color: #040405;
+      border: 1px solid var(--card-border);
+      padding: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .diagram-svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* -------------------------------------------------------------
+       ONGLET 3 : ACTIVITÉ INTERACTIVE
+       ------------------------------------------------------------- */
+    .activity-container {
+      background-color: #040405;
+      border: 1px solid var(--card-border);
+      padding: 16px;
+    }
+
+    .activity-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .quiz-opt-btn {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      font-family: var(--font-sans);
+      border-radius: 4px;
+    }
+
+    .quiz-opt-btn:hover {
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+
+    .quiz-opt-btn.correct {
+      background-color: rgba(16, 185, 129, 0.05);
+      border-color: var(--success-green);
+      color: var(--success-green);
+    }
+
+    .quiz-opt-btn.incorrect {
+      background-color: rgba(239, 68, 68, 0.05);
+      border-color: var(--error-red);
+      color: var(--error-red);
+    }
+
+    .quiz-feedback {
+      font-size: 12.5px;
+      padding: 12px;
+      border: 1px solid var(--card-border);
+      background-color: var(--card-bg);
+      display: none;
+    }
+
+    .quiz-feedback.success {
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      display: block;
+    }
+
+    /* Sandbox CSS Flexbox */
+    .flexbox-sandbox {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .flex-preview-area {
+      height: 90px;
+      background-color: #000000;
+      border: 1px solid var(--card-border);
+      display: flex;
+      padding: 10px;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .flex-box-item {
+      width: 32px;
+      height: 32px;
+      background-color: #ffffff;
+      color: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .flex-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .sandbox-select {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: var(--font-sans);
+    }
+
+    /* Simulator Zone Tactile (Angular/Bootstrap) */
+    .comfort-simulator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .phone-screen-mockup {
+      width: 140px;
+      height: 240px;
+      border: 4px solid #27272a;
+      border-radius: 12px;
+      background-color: #000000;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Simulation d'un header Bootstrap */
+    .mock-bs-nav {
+      background-color: #1e1e24;
+      padding: 6px;
+      font-size: 8px;
+      font-weight: 600;
+      border-bottom: 1px solid #2d2d34;
+      text-align: center;
+      color: #fff;
+    }
+
+    .mock-bs-body {
+      flex: 1;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .mock-bs-card {
+      border: 1px solid #2d2d34;
+      background-color: #09090b;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mock-bs-btn {
+      padding: 4px 8px;
+      background-color: #0d6efd; /* Bleu Bootstrap 5 */
+      color: white;
+      border-radius: 3px;
+      font-size: 7px;
+      text-align: center;
+      width: fit-content;
+      font-weight: 500;
+    }
+
+    .thumb-zone {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transition: background-image 0.2s ease;
+      z-index: 10;
+    }
+
+    .thumb-zone.right-hand {
+      background: radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.35) 0%, rgba(16, 185, 129, 0.15) 50%, rgba(239, 68, 68, 0.15) 80%);
+    }
+
+    .thumb-zone.left-hand {
+      background: radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.35) 0%, rgba(16, 185, 129, 0.15) 50%, rgba(239, 68, 68, 0.15) 80%);
+    }
+
+    .phone-overlay-text {
+      position: absolute;
+      bottom: 2px;
+      width: 100%;
+      text-align: center;
+      font-size: 7.5px;
+      color: #666;
+    }
+
+    /* Bcrypt Simulator */
+    .bcrypt-simulator {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bcrypt-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .bcrypt-input {
+      flex: 1;
+      background-color: #000000;
+      border: 1px solid var(--card-border);
+      padding: 10px;
+      color: #fff;
+      font-size: 13px;
+      border-radius: 4px;
+    }
+
+    .bcrypt-input:focus {
+      outline: none;
+      border-color: #ffffff;
+    }
+
+    .bcrypt-btn {
+      background-color: #ffffff;
+      color: #000000;
+      border: none;
+      padding: 0 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color var(--transition-speed);
+    }
+
+    .bcrypt-btn:hover {
+      background-color: #e4e4e7;
+    }
+
+    .bcrypt-result {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background-color: #000000;
+      padding: 10px;
+      border: 1px dashed var(--card-border);
+      word-break: break-all;
+      min-height: 38px;
+    }
+
+    /* HTTP Response status (NestJS) */
+    .http-simulator {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .http-response-view {
+      background-color: #000000;
+      border: 1px solid var(--card-border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+    }
+
+    .http-status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .status-2xx { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .status-4xx { background-color: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .status-5xx { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+    /* -------------------------------------------------------------
+       ONGLET 4 : TUTEUR IA
+       ------------------------------------------------------------- */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 260px;
+      background-color: #040405;
+      border: 1px solid var(--card-border);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      line-height: 1.4;
+      animation: fadeInUp 0.15s ease forwards;
+    }
+
+    .chat-bubble.tutor {
+      background-color: var(--card-bg);
+      align-self: flex-start;
+      border: 1px solid var(--card-border);
+      color: #e4e4e7;
+    }
+
+    .chat-bubble.user {
+      background-color: #ffffff;
+      color: #000000;
+      align-self: flex-end;
+      font-weight: 500;
+    }
+
+    .chat-input-bar {
+      display: flex;
+      border-top: 1px solid var(--card-border);
+      background-color: var(--card-bg);
+    }
+
+    .chat-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #fff;
+      padding: 12px;
+      font-size: 12.5px;
+      font-family: var(--font-sans);
+    }
+
+    .chat-input:focus {
+      outline: none;
+    }
+
+    .chat-send-btn {
+      background: none;
+      border: none;
+      color: #ffffff;
+      padding: 0 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .chat-prompt-helper {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-copy-prompt {
+      background-color: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      font-family: var(--font-sans);
+    }
+
+    .btn-copy-prompt:hover {
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+
+    /* -------------------------------------------------------------
+       PANNEAU DE VALIDATION
+       ------------------------------------------------------------- */
+    .card-footer-validation {
+      padding: 12px 20px;
+      background-color: #040405;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .validation-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .validation-checkbox {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .checkmark {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--card-border);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-speed);
+      background-color: transparent;
+    }
+
+    .validation-label:hover .checkmark {
+      border-color: #ffffff;
+    }
+
+    .validation-checkbox:checked ~ .checkmark {
+      background-color: #ffffff;
+      border-color: #ffffff;
+    }
+
+    .checkmark svg {
+      width: 10px;
+      height: 10px;
+      fill: none;
+      stroke: #000000;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transform: scale(0);
+      transition: transform 0.15s ease;
+    }
+
+    .validation-checkbox:checked ~ .checkmark svg {
+      transform: scale(1);
+    }
+
+    .validation-checkbox:checked ~ .validation-text {
+      color: #ffffff;
+    }
+
+    /* -------------------------------------------------------------
+       SECTION ACTIONS & COMPTEURS BAS
+       ------------------------------------------------------------- */
+    .actions-section {
+      margin-top: 24px;
+      border: 1px solid var(--card-border);
+      background-color: var(--card-bg);
+      border-radius: 6px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 100%;
+    }
+
+    .stat-box {
+      background-color: #000000;
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-dark);
+      text-transform: uppercase;
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-reset {
+      background: none;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-reset:hover {
+      background-color: rgba(239, 68, 68, 0.05);
+      border-color: #ef4444;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 24px 0;
+      border-top: 1px solid var(--card-border);
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dark);
+    }
+
+    /* -------------------------------------------------------------
+       ANIMATIONS
+       ------------------------------------------------------------- */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:nth-child(1) { animation-delay: 0.02s; }
+    .card:nth-child(2) { animation-delay: 0.04s; }
+    .card:nth-child(3) { animation-delay: 0.06s; }
+    .card:nth-child(4) { animation-delay: 0.08s; }
+    .card:nth-child(5) { animation-delay: 0.1s; }
+
+  </style>
+</head>
+<body>
+
+  <!-- =============================================================
+       STICKY HEADER AVEC BARRE DE PROGRESSION DISCRÈTE
+       ============================================================= -->
+  <header class="sticky-header">
+    <div class="container header-content">
+      <div class="brand-section">
+        <svg class="logo-svg" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#ffffff" stroke-width="2"/>
+          <path d="M7 8h10M7 12h10M7 16h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h1 class="app-title">TFE Hub - Angular, NestJS & Prisma</h1>
+      </div>
+      <div class="progress-stats-top" id="progress-stats-top">
+        <span>0</span> / 45 validés
+      </div>
+    </div>
+    <!-- Barre de progression intégrée en bordure inférieure -->
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-bar-fill"></div>
+    </div>
+  </header>
+
+  <!-- =============================================================
+       CORPS DE PAGE
+       ============================================================= -->
+  <main class="container">
+    
+    <!-- Onglets des semaines -->
+    <nav class="nav-tabs-wrapper" aria-label="Semaines">
+      <div class="nav-tabs" id="nav-tabs"></div>
+    </nav>
+
+    <!-- Informations semaine courante -->
+    <div class="week-header">
+      <h2 class="week-title" id="week-title">-</h2>
+      <div class="week-subtitle" id="week-subtitle">-</div>
+    </div>
+
+    <!-- Zone des cartes pliables -->
+    <section class="cards-container" id="cards-container" aria-live="polite"></section>
+
+    <!-- Zone statistiques et réinitialisation -->
+    <section class="actions-section">
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-val" id="stat-sessions">0 / 45</div>
+          <div class="stat-label">Sessions Validées</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stat-hours">0 h</div>
+          <div class="stat-label">Temps Cumulé</div>
+        </div>
+      </div>
+      <button class="btn-reset" id="btn-reset">
+        Réinitialiser la progression
+      </button>
+    </section>
+
+  </main>
+
+  <!-- =============================================================
+       PIED DE PAGE
+       ============================================================= -->
+  <footer>
+    <div class="container">
+      <p>TFE Hub - Angular, NestJS & Prisma &bull; PostgreSQL (Neon.tech)</p>
+      <p style="opacity: 0.5; margin-top: 4px;">Formation quotidienne de 45 minutes répartie sur 9 semaines (300h).</p>
+    </div>
+  </footer>
+
+  <!-- =============================================================
+       LOGIQUE D'INTERACTION ET BASE DE DONNÉES COHÉRENTE
+       ============================================================= -->
+  <script>
+    /* -------------------------------------------------------------
+       BASE DE DONNÉES ENRICHIE (Angular, NestJS, Prisma, Neon.tech)
+       ------------------------------------------------------------- */
+    const WEEKS_DATA = [
+      {
+        id: 1,
+        title: "Semaine 1 : Cadrage, Conception & UI Bootstrap",
+        subtitle: "Bloc 1 : Conception Agile & Ergonomie Front",
+        days: [
+          {
+            id: "w1-d1",
+            day: "Lundi",
+            topic: "Analyse des besoins & User Stories",
+            detail: "Formaliser les exigences du client final sous forme de User Stories (US) conformes aux critères INVEST.",
+            course: `
+              <div class="course-text">
+                <p>La réussite d'un TFE commence par un cadrage fonctionnel précis. Le développeur doit transcrire le besoin informel d'un client en **User Stories (US)** claires.</p>
+                <p>Le format standard d'une US est : <em>« En tant que [Profil], je veux [Action] afin de [Bénéfice] »</em>.</p>
+                <p class="course-subtitle-internal">Les critères de qualité INVEST :</p>
+                <ul class="course-list">
+                  <li><strong>Independent (I)</strong> : La story doit pouvoir être développée et livrée de façon isolée.</li>
+                  <li><strong>Negotiable (N)</strong> : Elle n'est pas un contrat figé et reste ouverte aux ajustements.</li>
+                  <li><strong>Valuable (V)</strong> : Elle apporte une valeur directe pour l'utilisateur final.</li>
+                  <li><strong>Estimable (E)</strong> : L'équipe technique possède assez d'informations pour chiffrer sa complexité.</li>
+                  <li><strong>Small (S)</strong> : Elle doit pouvoir être réalisée au cours d'un seul sprint (généralement 2 à 3 jours).</li>
+                  <li><strong>Testable (T)</strong> : Elle possède des critères d'acceptation précis pour valider sa réussite.</li>
+                </ul>
+              </div>
+            `,
+            example: `// User Story de validation d'un cours pour le TFE :\n\nEn tant que : Étudiant stagiaire\nJe veux : Cliquer sur la case de validation d'un cours\nAfin de : Mettre à jour en temps réel mon état de progression global\n\nCritères d'acceptation :\n1. La case cochée enregistre l'état en local (localStorage).\n2. La barre de progression supérieure s'incrémente de +2.22%.\n3. La couleur de la carte passe en surbrillance verte.`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel critère qualité INVEST est violé si une User Story est formulée comme : 'Développer l'application de formation et de facturation complète' ?",
+              options: [
+                "Negotiable (Négociable)",
+                "Small (Petite)",
+                "Valuable (Valeur ajoutée)"
+              ],
+              correctIndex: 1,
+              explanation: "Une telle story regroupe plusieurs domaines complexes et volumineux. Elle n'est pas 'Small' et doit être découpée en dizaines de sous-stories estimables."
+            },
+            aiResponses: {
+              "invest": "L'acronyme INVEST définit une bonne US : Indépendante, Négociable, apporte de la Valeur, Estimable, Petite (Small), Testable.",
+              "gabarit": "Gabarit : 'En tant que [Rôle], je veux [Fonctionnalité] afin de [Bénéfice]'.",
+              "default": "Des questions sur l'écriture de vos User Stories ou les critères de qualité INVEST ?"
+            }
+          },
+          {
+            id: "w1-d2",
+            day: "Mardi",
+            topic: "Ergonomie Mobile-First & Grille Bootstrap",
+            detail: "Règles d'ergonomie mobile, zones tactiles de confort et intégration de Bootstrap 5 dans Angular.",
+            course: `
+              <div class="course-text">
+                <p>En phase de développement front-end, concevoir selon l'approche **Mobile-First** consiste à coder l'affichage pour mobile avant de l'adapter aux grands écrans.</p>
+                <p>Dans un projet **Angular**, on intègre le framework **Bootstrap 5** pour gérer la mise en page responsive via son système de grille (classes <code>.row</code>, <code>.col-*</code>).</p>
+                <p class="course-subtitle-internal">Règles clés d'ergonomie sur smartphone :</p>
+                <ul class="course-list">
+                  <li><strong>Zone de confort du pouce</strong> : Plus de 75% des utilisateurs navigant d'une seule main, les boutons clés de formulaire doivent être placés en bas/milieu d'écran.</li>
+                  <li><strong>Cibles tactiles</strong> : Une surface d'action minimale de 48px de hauteur est requise pour éviter les erreurs de clic.</li>
+                  <li><strong>Bootstrap 5 & Flexbox</strong> : Utilisation des classes utilitaires (ex: <code>d-flex justify-content-end</code>) pour aligner les boutons stratégiques selon que l'utilisateur est droitier ou gaucher.</li>
+                </ul>
+              </div>
+            `,
+            example: `<!-- Composant Angular (Bouton d'action responsive Bootstrap 5) -->\n<div class="container-fluid">\n  <div class="row">\n    <!-- col-12 pour forcer l'alignement vertical sur mobile, col-md-6 sur PC -->\n    <div class="col-12 col-md-6 d-flex" [ngClass]="isLeftHanded ? 'justify-content-start' : 'justify-content-end'">\n      <button class="btn btn-primary btn-lg p-3" style="min-height: 48px;">\n        Valider le cours\n      </button>\n    </div>\n  </div>\n</div>`,
+            diagram: "none",
+            activity: {
+              type: "custom",
+              html: `
+                <div class="comfort-simulator">
+                  <span style="font-size: 11.5px; color: var(--text-muted);">Ergonomie Bootstrap 5 (Thumb Zone) :</span>
+                  <div class="phone-screen-mockup">
+                    <div class="thumb-zone right-hand" id="thumb-zone-sim"></div>
+                    <div class="mock-bs-nav">Angular App</div>
+                    <div class="mock-bs-body">
+                      <div class="mock-bs-card">
+                        <div style="font-weight:700;">Cours Ergonomie</div>
+                        <div>Bootstrap 5 active</div>
+                        <div class="d-flex" id="bs-btn-align" style="justify-content: flex-end; margin-top:14px;">
+                          <div class="mock-bs-btn">Valider</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="phone-overlay-text">Cible Tactile</div>
+                  </div>
+                  <div style="display:flex; gap: 8px;">
+                    <button class="quiz-opt-btn" onclick="toggleHand('right')">Droitier (.justify-content-end)</button>
+                    <button class="quiz-opt-btn" onclick="toggleHand('left')">Gaucher (.justify-content-start)</button>
+                  </div>
+                </div>
+              `
+            },
+            aiResponses: {
+              "bootstrap": "Bootstrap 5 s'intègre dans Angular pour simplifier l'utilisation des grilles et des alignements via flexbox.",
+              "confort": "La zone de confort du pouce se situe dans la partie inférieure droite pour un droitier et inférieure gauche pour un gaucher.",
+              "default": "Besoin d'aide pour coupler Bootstrap 5 et Angular de façon ergonomique ?"
+            }
+          },
+          {
+            id: "w1-d3",
+            day: "Mercredi",
+            topic: "Maquettage rapide & Charte UI",
+            detail: "Créer des wireframes puis des maquettes haute fidélité interactives.",
+            course: `
+              <div class="course-text">
+                <p>Le maquettage permet de valider le parcours utilisateur (UX) et le style graphique (UI) avant d'entamer le codage. Il comporte trois étapes de précision croissante :</p>
+                <ol class="course-list">
+                  <li><strong>Wireframe (Basse fidélité)</strong> : Dessin noir/gris centré sur la structure et la hiérarchie de l'information (les images sont symbolisées par des rectangles croisés).</li>
+                  <li><strong>Mockup (Haute fidélité)</strong> : Intégration de la charte graphique réelle, des polices (ex: Inter), des icônes et des couleurs du projet.</li>
+                  <li><strong>Prototype interactif</strong> : Liage des écrans pour simuler la navigation utilisateur devant le client.</li>
+                </ol>
+              </div>
+            `,
+            example: `<!-- Structure HTML de base émulant un squelette de wireframe -->\n<div class="wireframe-container" style="background:#222; padding:10px;">\n  <header style="height:40px; background:#444;">Navbar squelette</header>\n  <div style="display:flex; margin-top:10px;">\n    <aside style="width:50px; height:200px; background:#333;"></aside>\n    <main style="flex:1; height:200px; background:#555; margin-left:10px;"></main>\n  </div>\n</div>`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel outil collaboratif est le standard industriel actuel pour réaliser des mockups UI haute fidélité et des prototypes interactifs ?",
+              options: [
+                "Photoshop",
+                "Figma",
+                "Eclipse"
+              ],
+              correctIndex: 1,
+              explanation: "Figma est l'outil de référence vectoriel et collaboratif en ligne pour l'UI/UX design, facilitant les retours clients et l'export d'assets."
+            },
+            aiResponses: {
+              "figma": "Figma permet de collaborer en temps réel sur la création de maquettes et d'exporter directement les styles CSS pour vos composants Angular.",
+              "wireframe": "Le wireframe définit le squelette et la disposition sans aucune notion de couleur ni de design final.",
+              "default": "Besoin de conseils pour organiser vos maquettes sur Figma ?"
+            }
+          },
+          {
+            id: "w1-d4",
+            day: "Jeudi",
+            topic: "Planification PERT & GANTT",
+            detail: "Calculer le chemin critique et séquencer le projet de 300h avec PERT et GANTT.",
+            course: `
+              <div class="course-text">
+                <p>La gestion du temps sur les 300 heures de stage est capitale. Deux outils d'ordonnancement sont utilisés :</p>
+                <ul class="course-list">
+                  <li><strong>Diagramme PERT</strong> : Analyse les dépendances logiques entre les tâches pour identifier le **chemin critique** (la chaîne de tâches dont le retard décale directement la livraison finale).</li>
+                  <li><strong>Diagramme de GANTT</strong> : Traduit le planning dans le temps, affectant chaque lot de travail (Setup, API NestJS, BDD Prisma, Front Angular, Recette UAT) à un calendrier précis.</li>
+                </ul>
+              </div>
+            `,
+            example: `Ordonnancement typique du TFE :\nTâche A: Modélisation BDD (2j)\nTâche B: Backend NestJS + Prisma (4j) (dépend de A)\nTâche C: Frontend Angular (5j) (dépend de B)\nChemin critique = A ➔ B ➔ C = 11 jours minimum.`,
+            diagram: "pert",
+            activity: {
+              type: "quiz",
+              question: "Qu'est-ce qu'une tâche avec une 'marge nulle' sur un diagramme PERT ?",
+              options: [
+                "Une tâche qui ne prend aucun jour de travail",
+                "Une tâche située sur le chemin critique dont tout retard repousse la fin du projet",
+                "Une tâche optionnelle"
+              ],
+              correctIndex: 1,
+              explanation: "Sur le chemin critique, la marge de retard est égale à zéro. Chaque jour de retard pris sur cette tâche décale d'autant le projet entier."
+            },
+            aiResponses: {
+              "chemin critique": "C'est la séquence de tâches indispensables qui détermine la date de fin la plus proche de votre projet.",
+              "pert": "PERT modélise un réseau de tâches et met en lumière les dépendances critiques.",
+              "default": "Besoin d'aide pour évaluer la durée de vos tâches ou trouver le chemin critique ?"
+            }
+          },
+          {
+            id: "w1-d5",
+            day: "Vendredi",
+            topic: "Cadrage du MVP & Priorisation",
+            detail: "Définir le périmètre du MVP à l'aide de MoSCoW pour parer à la dérive du scope.",
+            course: `
+              <div class="course-text">
+                <p>Pour assurer la livraison du projet dans les temps du stage (300h), il faut définir un **MVP (Minimum Viable Product)**.</p>
+                <p>La dérive des objectifs (**Scope Creep**) est la tendance d'un projet à s'étendre en fonctionnalités non planifiées.</p>
+                <p class="course-subtitle-internal">La méthode de priorisation MoSCoW :</p>
+                <ul class="course-list">
+                  <li><strong>Must (Obligatoire)</strong> : Authentification JWT, API CRUD NestJS, Base Prisma, Composants Angular de base.</li>
+                  <li><strong>Should (Important)</strong> : DTOs de validation, gestion d'erreurs globale.</li>
+                  <li><strong>Could (Optionnel)</strong> : Système d'assistance par chatbot local.</li>
+                  <li><strong>Won't (Exclu pour le moment)</strong> : Réseau social ou messagerie instantanée en ligne.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Exemple d'un scope MVP pour le TFE :\n- Must : Rendu des fiches de cours, validation locale, base de données Neon.tech fonctionnelle.\n- Won't : Paiement en ligne, tableau de bord multi-utilisateurs en temps réel.`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel terme MoSCoW représente les fonctionnalités obligatoires sans lesquelles le projet ne peut être considéré comme fonctionnel ?",
+              options: [
+                "Must have",
+                "Should have",
+                "Could have"
+              ],
+              correctIndex: 0,
+              explanation: "Les fonctionnalités 'Must' constituent le socle minimal du MVP. Sans elles, l'application est considérée comme un échec."
+            },
+            aiResponses: {
+              "mvp": "Le MVP est la version épurée de l'application apportant une valeur directe immédiate sans surplus.",
+              "scope creep": "Désigne le glissement non contrôlé des exigences du projet en cours de route.",
+              "default": "Besoin de conseils pour classer vos fonctionnalités dans le tableau MoSCoW ?"
+            }
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "Semaine 2 : Modélisation & Protocoles Web",
+        subtitle: "Bloc 1 : Architecture UML, MCD & API REST NestJS",
+        days: [
+          {
+            id: "w2-d1",
+            day: "Lundi",
+            topic: "UML : Cas d'Utilisation & Séquence",
+            detail: "Modéliser le comportement du système à l'aide d'UML pour documenter son TFE.",
+            course: `
+              <div class="course-text">
+                <p>L'<strong>UML</strong> est le langage visuel standard utilisé pour conceptualiser l'architecture applicative avant sa réalisation.</p>
+                <ul class="course-list">
+                  <li><strong>Diagramme des Cas d'Utilisation (Use Case)</strong> : Présente les **Acteurs** du système (Étudiant, Tuteur, Admin) et leurs droits fonctionnels associés.</li>
+                  <li><strong>Diagramme de Séquence</strong> : Modélise les interactions chronologiques des composants. Idéal pour documenter le flux d'une requête d'API (Angular ➔ Contrôleur NestJS ➔ Service Prisma ➔ PostgreSQL).</li>
+                </ul>
+              </div>
+            `,
+            example: `// Représentation textuelle d'un diagramme de séquence UML :\n\nAngular (Front)           NestJS Controller          Prisma ORM          Neon PostgreSQL\n    |                             |                       |                      |\n    |--- 1. POST /auth/login ---->|                       |                      |\n    |                             |--- 2. findUnique() -->|                      |\n    |                             |                       |--- 3. SQL Query ---->|\n    |                             |                       |<-- 4. User Data -----|\n    |                             |<-- 5. User Object ----|                      |\n    |<-- 6. Réponse JSON + JWT ---|                       |                      |`,
+            diagram: "sequence",
+            activity: {
+              type: "quiz",
+              question: "Dans un diagramme de séquence UML, quel symbole matérialise l'envoi d'un message synchrone (attendant une réponse) ?",
+              options: [
+                "Une flèche en pointillés",
+                "Une flèche pleine avec pointe fermée",
+                "Une simple ligne sans pointe"
+              ],
+              correctIndex: 1,
+              explanation: "Une flèche pleine avec pointe fermée représente un message synchrone. Le retour de l'information est modélisé par une flèche en pointillés."
+            },
+            aiResponses: {
+              "sequence": "Le diagramme de séquence se lit de haut en bas et illustre l'échange de messages au cours du temps.",
+              "use case": "Définit les limites fonctionnelles et les rôles (droits) sur votre application.",
+              "default": "Besoin d'aide pour tracer vos diagrammes UML pour le jury ?"
+            }
+          },
+          {
+            id: "w2-d2",
+            day: "Mardi",
+            topic: "Merise : MCD et Normalisation",
+            detail: "Concevoir une base relationnelle PostgreSQL propre et normalisée à l'aide de Merise.",
+            course: `
+              <div class="course-text">
+                <p>La méthode **Merise** modélise les données d'une base relationnelle via le <strong>MCD (Modèle Conceptuel des Données)</strong> composé d'**Entités**, d'**Associations** et de **Cardinalités**.</p>
+                <p>Pour assurer la pérennité du stockage, la structure doit respecter les trois premières **Formes Normales (FN)** :</p>
+                <ul class="course-list">
+                  <li><strong>1NF</strong> : Toutes les valeurs doivent être atomiques (indivisibles) et chaque relation doit posséder une clé primaire unique.</li>
+                  <li><strong>2NF</strong> : Respecter la 1NF, et s'assurer que chaque attribut non-clé dépend de la totalité de la clé primaire.</li>
+                  <li><strong>3NF</strong> : Respecter la 2NF, et s'assurer qu'aucun attribut non-clé ne dépend d'un autre attribut non-clé.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Traduction MCD en Modèle Relationnel (Prisma) :\n\nmodel Student {\n  id    Int    @id @default(autoincrement()) // Clé primaire (PK)\n  email String @unique\n  logs  Log[]  // Relation One-to-Many\n}\n\nmodel Log {\n  id        Int      @id @default(autoincrement())\n  studentId Int\n  student   Student  @relation(fields: [studentId], references: [id]) // Clé étrangère (FK)\n}`,
+            diagram: "mcd",
+            activity: {
+              type: "quiz",
+              question: "Si une table contient les colonnes (id, code_postal, ville) et que la ville dépend directement du code postal (attribut non-clé), quelle forme normale n'est pas respectée ?",
+              options: [
+                "La 1ère Forme Normale",
+                "La 2e Forme Normale",
+                "La 3e Forme Normale"
+              ],
+              correctIndex: 2,
+              explanation: "La 3NF interdit qu'un attribut dépend d'un autre attribut non-clé. Pour respecter la 3NF, il faudrait créer une table de référence CodePostal(code_postal [PK], ville)."
+            },
+            aiResponses: {
+              "mcd": "Le MCD formalise la structure des entités et relations théoriques de la base PostgreSQL.",
+              "normalisation": "Elle évite les anomalies de mise à jour et élimine la redondance d'information en base.",
+              "default": "Besoin d'aide pour valider le respect des formes normales dans votre modèle ?"
+            }
+          },
+          {
+            id: "w2-d3",
+            day: "Mercredi",
+            topic: "PostgreSQL & Cloud Neon.tech",
+            detail: "Comprendre l'architecture de PostgreSQL Serverless de Neon.tech et le pooling de connexions.",
+            course: `
+              <div class="course-text">
+                <p>Pour le projet, nous utilisons **PostgreSQL** hébergé sur <strong>Neon.tech</strong>, une plateforme de base de données cloud moderne et serverless.</p>
+                <p class="course-subtitle-internal">Les concepts clés de Neon.tech :</p>
+                <ul class="course-list">
+                  <li><strong>Serverless Compute Autoscaling</strong> : Neon désactive ou réduit les ressources de calcul de la base de données lorsqu'elle n'est pas sollicitée, ce qui est parfait pour un usage étudiant.</li>
+                  <li><strong>Pooling de connexion (PgBouncer)</strong> : Les architectures serverless ouvrent et ferment rapidement des connexions réseau, ce qui peut saturer PostgreSQL. Neon fournit une URL de connexion dédiée intégrant un pooler (PgBouncer) pour recycler efficacement les connexions actives de Prisma.</li>
+                  <li><strong>Database Branching</strong> : Permet de créer instantanément une copie isolée de la base de données de production pour tester des migrations Prisma sans risques.</li>
+                </ul>
+              </div>
+            `,
+            example: `# Exemple de variables d'environnement dans le fichier .env :\n\n# URL avec Pooling (PgBouncer) à utiliser pour l'application en production\nDATABASE_URL="postgres://user:pass@neon-host-pooled.neon.tech/neondb?pgbouncer=true"\n\n# URL directe de connexion sans pooling (utilisée par Prisma pour générer les migrations)\nDIRECT_URL="postgres://user:pass@neon-host.neon.tech/neondb"`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Pourquoi Neon.tech fournit-il deux chaînes de connexion réseau distinctes (DATABASE_URL et DIRECT_URL) ?",
+              options: [
+                "L'une est pour le protocole HTTP et l'autre pour WebSocket",
+                "DATABASE_URL utilise le pooling de connexion PgBouncer pour l'application active, tandis que DIRECT_URL permet à Prisma d'exécuter des requêtes système de migration en direct",
+                "L'une est publique et l'autre est privée"
+              ],
+              correctIndex: 1,
+              explanation: "Les migrations Prisma ont besoin d'une connexion directe (DIRECT_URL) pour créer des verrous et modifier les tables. L'application utilise le pooler PgBouncer (DATABASE_URL) pour optimiser les requêtes concurrentes."
+            },
+            aiResponses: {
+              "neon": "Neon.tech est une base de données PostgreSQL serverless, offrant le branching instantané et un pooling PgBouncer intégré.",
+              "pgbouncer": "PgBouncer est un gestionnaire de connexions PostgreSQL léger qui limite la charge sur le serveur en réutilisant les sessions.",
+              "default": "Besoin d'aide pour connecter votre projet NestJS/Prisma à la base Neon.tech ?"
+            }
+          },
+          {
+            id: "w2-d4",
+            day: "Jeudi",
+            topic: "Contrôle de Version avec GitFlow",
+            detail: "Gérer un workflow de branches Git professionnel (main, develop, feature/).",
+            course: `
+              <div class="course-text">
+                <p>La mise en place de **GitFlow** structure l'avancement du projet technique :</p>
+                <ul class="course-list">
+                  <li><strong>main</strong> : Branche contenant le code stable déployé en ligne.</li>
+                  <li><strong>develop</strong> : Branche de travail centrale regroupant les développements validés.</li>
+                  <li><strong>feature/nom-tache</strong> : Branches isolées créées à partir de <code>develop</code> pour coder une fonctionnalité (ex: <code>feature/nestjs-auth</code>). Elles sont fusionnées après validation.</li>
+                </ul>
+              </div>
+            `,
+            example: `# Cycle de commandes Git pour débuter un développement :\n\ngit checkout develop\ngit pull origin develop\ngit checkout -b feature/neon-setup\n# ... Configuration de l'accès Neon.tech ...\ngit add .\ngit commit -m "feat: configuration de l'url de base de données neon.tech"\ngit push origin feature/neon-setup`,
+            diagram: "gitflow",
+            activity: {
+              type: "quiz",
+              question: "Quelle branche du dépôt GitFlow doit impérativement correspondre à l'état de l'application déployée en production ?",
+              options: [
+                "develop",
+                "main",
+                "feature/"
+              ],
+              correctIndex: 1,
+              explanation: "La branche main est le miroir de la production. Elle ne reçoit que des fusions de branches prêtes et validées pour le déploiement public."
+            },
+            aiResponses: {
+              "gitflow": "GitFlow organise le travail d'intégration en protégeant la branche principale main de tout commit direct.",
+              "pr": "Une Pull Request permet de relire le code et de le tester avant de le fusionner dans develop.",
+              "default": "Des questions sur la résolution de conflits ou le cycle GitFlow ?"
+            }
+          },
+          {
+            id: "w2-d5",
+            day: "Vendredi",
+            topic: "HTTP, REST & Contrôleurs NestJS",
+            detail: "Comprendre le protocole HTTP, REST et le routage déclaratif de NestJS.",
+            course: `
+              <div class="course-text">
+                <p>Le protocole **HTTP** organise les échanges sur le web. Une API **RESTful** s'appuie sur ce protocole en modélisant des ressources (URI au pluriel) manipulées via les méthodes standards (GET, POST, PUT, DELETE).</p>
+                <p>Sous <strong>NestJS</strong>, les routes d'API sont déclarées dans un **Contrôleur** à l'aide de décorateurs (ex: <code>@Controller('courses')</code>). NestJS gère en interne le routage et retourne la réponse au format JSON par défaut.</p>
+              </div>
+            `,
+            example: `// Contrôleur de ressources NestJS :\nimport { Controller, Get, Post, Body } from '@nestjs/common';\n\n@Controller('courses')\nexport class CourseController {\n\n  @Get()\n  async findAll() {\n    return { success: true, data: [] };\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "custom",
+              html: `
+                <div class="http-simulator">
+                  <span style="font-size: 11px;">Générateur de réponse HTTP (NestJS Controller) :</span>
+                  <select class="sandbox-select" id="http-status-select" onchange="runHttpSimulator()">
+                    <option value="200">200 OK (GET)</option>
+                    <option value="201">201 Created (POST)</option>
+                    <option value="400">400 Bad Request (ValidationPipe)</option>
+                    <option value="401">401 Unauthorized (AuthGuard)</option>
+                    <option value="404">404 Not Found (PrismaException)</option>
+                    <option value="500">500 Internal Error (ExceptionFilter)</option>
+                  </select>
+                  <div class="http-response-view" id="http-response-output">
+                    Sélectionnez un cas pour simuler le code NestJS et la réponse.
+                  </div>
+                </div>
+              `
+            },
+            aiResponses: {
+              "nestjs": "NestJS s'appuie sur des décorateurs (comme @Get, @Post) pour définir les routes HTTP au sein d'un contrôleur.",
+              "rest": "REST standardise les requêtes en mappant les verbes HTTP sur les opérations de bases de données (CRUD).",
+              "default": "Besoin de structurer vos routes d'API NestJS ?"
+            }
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "Semaine 3 : Fondations Backend avec NestJS",
+        subtitle: "Bloc 1 : Architecture modulaire, POO & Prisma ORM",
+        days: [
+          {
+            id: "w3-d1",
+            day: "Lundi",
+            topic: "Introduction à l'Architecture NestJS",
+            detail: "Découvrir l'architecture MVC, les Modules, Contrôleurs et Services NestJS.",
+            course: `
+              <div class="course-text">
+                <p><strong>NestJS</strong> est un framework backend Node.js robuste basé sur TypeScript. Il résout le problème du code désorganisé d'Express en imposant une **architecture modulaire** stricte :</p>
+                <ul class="course-list">
+                  <li><strong>Modules (décorés par @Module)</strong> : Organisent l'application en briques fonctionnelles isolées et réutilisables (ex: AuthModule, UserModule).</li>
+                  <li><strong>Contrôleurs (@Controller)</strong> : Interceptent les requêtes HTTP entrantes, valident les données, et renvoient les réponses.</li>
+                  <li><strong>Services (@Injectable)</strong> : Contiennent la logique métier (ex: appeler la base de données via Prisma). Ils sont injectés dans les contrôleurs.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Structure minimale d'un module NestJS (app.module.ts) :\nimport { Module } from '@nestjs/common';\nimport { CourseController } from './course.controller';\nimport { CourseService } from './course.service';\n\n@Module({\n  controllers: [CourseController],\n  providers: [CourseService],\n})\nexport class AppModule {}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel composant de l'architecture NestJS est responsable d'intercepter les requêtes HTTP et de définir les URI de l'API ?",
+              options: [
+                "Le Service",
+                "Le Contrôleur",
+                "Le Module"
+              ],
+              correctIndex: 1,
+              explanation: "Le Contrôleur (Controller) intercepte les requêtes HTTP entrantes pour y associer des routes de l'API et traiter les retours."
+            },
+            aiResponses: {
+              "module": "Le module encapsule les contrôleurs et services associés à un domaine fonctionnel de l'application.",
+              "service": "Le service gère le traitement des données et la logique métier de l'API.",
+              "default": "Besoin de conseils pour découper vos fichiers dans l'architecture NestJS ?"
+            }
+          },
+          {
+            id: "w3-d2",
+            day: "Mardi",
+            topic: "TypeScript & POO dans NestJS",
+            detail: "Modéliser en JavaScript avec les classes ES6, l'encapsulation privée et les chaîne de prototypes.",
+            course: `
+              <div class="course-text">
+                <p>La **Programmation Orientée Objet (POO)** en JavaScript moderne s'appuie sur le sucre syntaxique des <strong>Classes ES6</strong>, tout en reposant sur le modèle sous-jacent de l'<strong>héritage prototypal</strong> de la chaîne de prototypes.</p>
+                <p>TypeScript enrichit ce modèle avec des décorateurs et des types statiques exploités par NestJS :</p>
+                <ul class="course-list">
+                  <li><strong>Encapsulation par champs privés</strong> : Pour empêcher la modification directe des variables internes d'une instance, on déclare des champs privés préfixés par le caractère <code>#</code>. Ils sont strictement inaccessibles depuis l'extérieur de la classe.</li>
+                  <li><strong>Accesseurs (Getters / Setters)</strong> : On utilise les mots-clés <code>get</code> et <code>set</code> pour créer des méthodes qui se comportent comme des propriétés simples, permettant de contrôler ou de valider la lecture et l'écriture de données.</li>
+                  <li><strong>Héritage prototypal</strong> : Le mot-clé <code>extends</code> crée une classe fille. La fonction <code>super()</code> appelle le constructeur parent pour hériter de ses propriétés.</li>
+                </ul>
+                <p>En NestJS, la POO est la norme : chaque service, contrôleur ou middleware est une classe TypeScript instanciée et gérée par le conteneur IoC (Inversion of Control).</p>
+              </div>
+            `,
+            example: `// Exemple de classe service encapsulée en TypeScript ES6 moderne\n\nclass StudentService {\n  // Attribut privé\n  #prisma;\n\n  constructor(prismaInstance) {\n    this.#prisma = prismaInstance;\n  }\n\n  // Accesseur en lecture\n  get hasPrisma() {\n    return !!this.#prisma;\n  }\n\n  async getProfile(id) {\n    return await this.#prisma.student.findUnique({ where: { id } });\n  }\n}\n\n// Héritage\nclass VipStudentService extends StudentService {\n  constructor(prismaInstance) {\n    super(prismaInstance); // Appel du constructeur parent\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle notation de JavaScript moderne ES6 permet de rendre un attribut de classe strictement privé et inaccessible depuis l'extérieur de celle-ci ?",
+              options: [
+                "private monAttribut;",
+                "this._monAttribut = ...",
+                "#monAttribut;"
+              ],
+              correctIndex: 2,
+              explanation: "Le préfixe # est la syntaxe JavaScript standard (ES2022) pour définir des propriétés privées inaccessibles depuis l'extérieur de la classe, même après compilation TypeScript."
+            },
+            aiResponses: {
+              "champs prives": "Le symbole # empêche toute lecture ou modification de la propriété depuis l'extérieur de l'instance.",
+              "classes": "Les classes ES6 sont le standard de développement pour structurer la logique objet moderne en TypeScript.",
+              "default": "Besoin de clarifier le fonctionnement de 'this' ou de l'héritage prototypal ?"
+            }
+          },
+          {
+            id: "w3-d3",
+            day: "Mercredi",
+            topic: "L'Injection de Dépendances (DI)",
+            detail: "Comprendre le conteneur IoC et l'injection de dépendances dans NestJS.",
+            course: `
+              <div class="course-text">
+                <p>L'<strong>Injection de Dépendances (DI)</strong> est un design pattern majeur implémenté par NestJS. Plutôt que de forcer une classe à instancier manuellement ses dépendances (ex: <code>const db = new PrismaClient()</code>), on délègue cette responsabilité au conteneur du framework.</p>
+                <ul class="course-list">
+                  <li><strong>@Injectable()</strong> : Décorateur qui indique à NestJS que la classe peut être injectée en tant que dépendance.</li>
+                  <li><strong>Injection par constructeur</strong> : NestJS analyse les types définis dans le constructeur et fournit automatiquement l'instance nécessaire au démarrage de l'application.</li>
+                </ul>
+                <p>Ce couplage lâche facilite grandement l'écriture de tests unitaires (en remplaçant le vrai service par un mock).</p>
+              </div>
+            `,
+            example: `// Injection de dépendance par constructeur :\nimport { Injectable } from '@nestjs/common';\nimport { PrismaService } from './prisma.service';\n\n@Injectable() // Enregistre le service comme injectable\nexport class CourseService {\n  // NestJS instancie et fournit automatiquement PrismaService ici\n  constructor(private prisma: PrismaService) {}\n\n  async getCourses() {\n    return this.prisma.course.findMany();\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel décorateur doit-on ajouter au-dessus d'une classe de service NestJS pour indiquer au framework qu'elle peut être injectée comme dépendance ?",
+              options: [
+                "@Controller()",
+                "@Injectable()",
+                "@Module()"
+              ],
+              correctIndex: 1,
+              explanation: "Le décorateur @Injectable() déclare la classe auprès de l'injecteur NestJS, permettant son instanciation automatique dans les constructeurs."
+            },
+            aiResponses: {
+              "injection": "L'injection de dépendance permet de séparer la création des objets de leur utilisation.",
+              "ioc": "IoC (Inversion of Control) désigne le fait de déléguer la gestion du cycle de vie des objets au framework.",
+              "default": "Besoin d'aide pour configurer ou déclarer un Provider dans votre module ?"
+            }
+          },
+          {
+            id: "w3-d4",
+            day: "Jeudi",
+            topic: "Exception Filters globaux",
+            detail: "Mettre en place un Exception Filter global pour intercepter et formater les erreurs d'API.",
+            course: `
+              <div class="course-text">
+                <p>Dans NestJS, les erreurs lancées par l'application sont interceptées par la couche d'exception intégrée du framework, qui retourne une réponse d'erreur standard.</p>
+                <p>Pour homogénéiser le retour réseau (ex: en cas de crash de la BDD PostgreSQL ou d'erreur système brute), on crée un **Exception Filter** global personnalisé (implémentant l'interface <code>ExceptionFilter</code>) :</p>
+                <ul class="course-list">
+                  <li>Il capture l'erreur lancée dans le code.</li>
+                  <li>Il extrait le contexte HTTP (la requête et la réponse).</li>
+                  <li>Il formate une réponse JSON propre et uniforme en y intégrant un horodatage et le chemin d'URL d'erreur.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Exception Filter personnalisé (http-exception.filter.ts) :\nimport { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';\n\n@Catch(HttpException)\nexport class HttpExceptionFilter implements ExceptionFilter {\n  catch(exception: HttpException, host: ArgumentsHost) {\n    const ctx = host.switchToHttp();\n    const response = ctx.getResponse();\n    const status = exception.getStatus();\n\n    response.status(status).json({\n      statusCode: status,\n      timestamp: new Date().toISOString(),\n      message: exception.message,\n    });\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel décorateur permet d'indiquer à NestJS quelles exceptions précises doivent être interceptées par un Exception Filter ?",
+              options: [
+                "@Injectable()",
+                "@Catch()",
+                "@UseGuards()"
+              ],
+              correctIndex: 1,
+              explanation: "Le décorateur @Catch(...) accepte une liste de classes d'exceptions (ex: HttpException) que le filtre doit surveiller et intercepter."
+            },
+            aiResponses: {
+              "exception filter": "Permet de centraliser et d'homogénéiser le format de retour des erreurs d'API de votre TFE.",
+              "http-exception": "Classe de base de NestJS pour lancer des exceptions HTTP associées à un code statut précis.",
+              "default": "Besoin de coder un filtre d'exception personnalisé pour attraper les erreurs Prisma ?"
+            }
+          },
+          {
+            id: "w3-d5",
+            day: "Vendredi",
+            topic: "Setup de Prisma ORM & PostgreSQL",
+            detail: "Installer, configurer et initialiser Prisma avec PostgreSQL sur Neon.tech.",
+            course: `
+              <div class="course-text">
+                <p>L'<strong>ORM Prisma</strong> fait le pont entre le code TypeScript et la base PostgreSQL hébergée sur Neon.tech.</p>
+                <p class="course-subtitle-internal">Étapes d'initialisation :</p>
+                <ol class="course-list">
+                  <li>Installation : <code>npm i @prisma/client</code> et <code>npm i -D prisma</code>.</li>
+                  <li>Initialisation : <code>npx prisma init</code> (génère le dossier /prisma et le fichier schema.prisma).</li>
+                  <li>Configuration : Renseigner les variables <code>DATABASE_URL</code> (avec PgBouncer) et <code>DIRECT_URL</code> dans le fichier <code>.env</code>.</li>
+                  <li>Création de la classe <code>PrismaService</code> dans NestJS qui hérite de <code>PrismaClient</code> et gère l'ouverture et la fermeture propre des connexions.</li>
+                </ol>
+              </div>
+            `,
+            example: `// Service Prisma d'accès aux données (prisma.service.ts) :\nimport { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';\nimport { PrismaClient } from '@prisma/client';\n\n@Injectable()\nexport class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {\n  async onModuleInit() {\n    await this.$connect(); // Connexion à PostgreSQL Neon.tech au démarrage\n  }\n\n  async onModuleDestroy() {\n    await this.$disconnect(); // Fermeture propre\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle interface TypeScript impose d'implémenter la méthode 'onModuleInit' pour gérer la connexion réseau au démarrage de NestJS ?",
+              options: [
+                "OnModuleInit",
+                "OnModuleDestroy",
+                "OnInit"
+              ],
+              correctIndex: 0,
+              explanation: "L'interface OnModuleInit de NestJS définit le hook de cycle de vie onModuleInit(), exécuté par le framework dès que le module est instancié."
+            },
+            aiResponses: {
+              "prisma client": "PrismaClient est le moteur d'exécution généré par Prisma pour requêter la base PostgreSQL.",
+              "onmoduleinit": "Hook de NestJS permettant d'exécuter du code d'initialisation réseau ou système au démarrage.",
+              "default": "Besoin d'aide pour générer votre client Prisma ou écrire le service d'intégration ?"
+            }
+          }
+        ]
+      },
+      {
+        id: 4,
+        title: "Semaine 4 : API REST & Logique Métier (NestJS + Prisma)",
+        subtitle: "Bloc 2 : Validations DTO, CRUD & Relations Prisma",
+        days: [
+          {
+            id: "w4-d1",
+            day: "Lundi",
+            topic: "CRUD complet avec Prisma Client",
+            detail: "Implémenter les actions CRUD (Create, Read, Update, Delete) avec le client Prisma dans les services NestJS.",
+            course: `
+              <div class="course-text">
+                <p>Le développement de l'application repose sur la création de routes de type **CRUD** pour manipuler les tables de données PostgreSQL.</p>
+                <p>À l'aide de l'instance <code>PrismaService</code> injectée, on exécute les fonctions d'accès aux données de Prisma :</p>
+                <ul class="course-list">
+                  <li><code>findMany()</code> : Récupère la liste des enregistrements.</li>
+                  <li><code>findUnique()</code> : Recherche un enregistrement par son identifiant unique.</li>
+                  <li><code>create()</code> : Insère une nouvelle ligne.</li>
+                  <li><code>update()</code> : Modifie les colonnes sélectionnées.</li>
+                  <li><code>delete()</code> : Supprime la ligne de la base.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Implémentation du service CRUD d'utilisateurs (user.service.ts) :\nimport { Injectable } from '@nestjs/common';\nimport { PrismaService } from './prisma.service';\n\n@Injectable()\nexport class UserService {\n  constructor(private prisma: PrismaService) {}\n\n  async create(data) {\n    return this.prisma.user.create({ data });\n  }\n\n  async findOne(id: number) {\n    return this.prisma.user.findUnique({ where: { id } });\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle méthode Prisma Client permet de modifier des données déjà enregistrées dans une table PostgreSQL ?",
+              options: [
+                "save()",
+                "update()",
+                "create()"
+              ],
+              correctIndex: 1,
+              explanation: "La méthode update() de Prisma Client prend en argument un objet spécifiant la condition (where) et les nouvelles données à écrire (data)."
+            },
+            aiResponses: {
+              "crud": "CRUD désigne les 4 actions de persistance de données : Create, Read, Update, Delete.",
+              "prisma": "Prisma traduit les fonctions JS/TS en requêtes SQL optimisées exécutées sur PostgreSQL.",
+              "default": "Besoin d'aide pour rédiger une fonction de filtrage ou de tri avec Prisma ?"
+            }
+          },
+          {
+            id: "w4-d2",
+            day: "Mardi",
+            topic: "DTOs & Pipes de Validation",
+            detail: "Sécuriser les entrées de requêtes HTTP à l'aide de class-validator et ValidationPipe.",
+            course: `
+              <div class="course-text">
+                <p>Le serveur d'API NestJS ne doit jamais faire confiance aux données transmises par le navigateur client.</p>
+                <p>Pour valider et typer les données reçues, on utilise un **DTO (Data Transfer Object)** représenté par une classe TypeScript décorée avec les décorateurs de validation de la bibliothèque <code>class-validator</code>.</p>
+                <p>L'activation globale de <code>ValidationPipe</code> dans NestJS intercepte chaque requête, valide la forme de l'objet DTO et rejette immédiatement les appels non-conformes en retournant un code **400 Bad Request**.</p>
+              </div>
+            `,
+            example: `// Déclaration de DTO de création de cours (create-course.dto.ts) :\nimport { IsString, IsNotEmpty, MinLength } from 'class-validator';\n\nexport class CreateCourseDto {\n  @IsString()\n  @IsNotEmpty()\n  title: string;\n\n  @IsString()\n  @MinLength(10, { message: 'La description doit faire au moins 10 caractères.' })\n  description: string;\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel décorateur de validation permet d'imposer qu'une propriété du DTO ne doit pas être une chaîne vide ou nulle ?",
+              options: [
+                "@IsString()",
+                "@IsNotEmpty()",
+                "@MinLength()"
+              ],
+              correctIndex: 1,
+              explanation: "@IsNotEmpty() de class-validator s'assure que le paramètre fourni contient des caractères réels et n'est pas vide."
+            },
+            aiResponses: {
+              "dto": "Data Transfer Object : classe TypeScript formalisant la forme de la donnée reçue par l'API.",
+              "validationpipe": "Le Pipe de NestJS qui automatise l'analyse des décorateurs class-validator sur vos DTOs.",
+              "default": "Comment configurer des décorateurs de validation complexes ou des listes dans un DTO ?"
+            }
+          },
+          {
+            id: "w4-d3",
+            day: "Mercredi",
+            topic: "Asynchronisme en TypeScript",
+            detail: "Gérer l'asynchronisme avec les Promises et introduction à RxJS côté NestJS.",
+            course: `
+              <div class="course-text">
+                <p>Node.js exécute le JavaScript sur un **thread unique**. Pour ne pas figer l'application lors des accès lents (ex: requêter PostgreSQL sur le cloud Neon.tech), on écrit du code **asynchrone**.</p>
+                <p>NestJS s'appuie sur deux modèles :</p>
+                <ul class="course-list">
+                  <li><strong>Promises (async/await)</strong> : Modèle standard pour gérer une valeur asynchrone future de façon séquentielle et lisible.</li>
+                  <li><strong>RxJS Observables</strong> : Flux de données asynchrones multiples dans le temps (utilisé par défaut pour certains composants de NestJS et omniprésent dans Angular).</li>
+                </ul>
+              </div>
+            `,
+            example: `// Appel asynchrone séquentiel avec async/await dans NestJS :\n@Get(':id')\nasync findOne(@Param('id') id: string) {\n  // Le thread unique est libéré en attente de la réponse de PostgreSQL\n  const course = await this.courseService.findOne(+id);\n  if (!course) throw new NotFoundException('Cours introuvable');\n  return course;\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel est le danger de l'utilisation de méthodes synchrones (comme fs.readFileSync) sur un serveur d'API NestJS ?",
+              options: [
+                "Elles provoquent le chiffrement forcé de la base de données",
+                "Elles figent totalement le serveur et bloquent le traitement des requêtes de tous les utilisateurs pendant l'opération",
+                "Elles augmentent la taille du fichier schema.prisma"
+              ],
+              correctIndex: 1,
+              explanation: "Node.js est mono-thread. Une opération synchrone bloque ce thread, empêchant NestJS de traiter toute autre requête concurrente."
+            },
+            aiResponses: {
+              "asynchronisme": "Le modèle non-bloquant de Node.js délègue les tâches d'E/S au système d'exploitation pour rester réactif.",
+              "rxjs": "RxJS est une bibliothèque de programmation réactive utilisant des Observables pour gérer les flux asynchrones.",
+              "default": "Des questions sur l'utilisation d'async/await ou sur l'intégration de RxJS ?"
+            }
+          },
+          {
+            id: "w4-d4",
+            day: "Jeudi",
+            topic: "Relations de BDD avec Prisma",
+            detail: "Modéliser et interroger des relations One-to-Many et Many-to-Many dans PostgreSQL.",
+            course: `
+              <div class="course-text">
+                <p>Les bases de données relationnelles comme PostgreSQL lient les tables entre elles à l'aide de clés primaires et de clés étrangères.</p>
+                <p>Dans le fichier <code>schema.prisma</code>, on déclare ces relations de manière déclarative. Lors de la récupération de données dans les services, on utilise :</p>
+                <ul class="course-list">
+                  <li><strong>include</strong> : Réalise des jointures automatiques SQL pour retourner les tables liées (ex: inclure les logs d'un étudiant).</li>
+                  <li><strong>select</strong> : Permet de choisir précisément les colonnes retournées, ce qui permet par exemple d'exclure les données sensibles avant l'envoi réseau.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Récupération d'un cours en incluant les étudiants inscrits (jointure Prisma) :\n\nconst courseWithStudents = await this.prisma.course.findUnique({\n  where: { id: 5 },\n  include: {\n    students: true // Jointure SQL automatique via Prisma\n  }\n});`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle instruction Prisma Client utiliseriez-vous pour récupérer uniquement le titre d'un cours sans charger sa description en mémoire ?",
+              options: [
+                "include",
+                "select",
+                "where"
+              ],
+              correctIndex: 1,
+              explanation: "L'instruction 'select' permet d'isoler les colonnes cibles à rapatrier de la base de données PostgreSQL."
+            },
+            aiResponses: {
+              "select": "select permet de choisir les attributs à extraire et améliore la sécurité et les performances.",
+              "include": "include effectue des jointures SQL automatiques basées sur les relations déclarées dans schema.prisma.",
+              "default": "Besoin de concevoir une relation Many-to-Many ou One-to-Many sous Prisma ?"
+            }
+          },
+          {
+            id: "w4-d5",
+            day: "Vendredi",
+            topic: "Documentation OpenAPI / Swagger",
+            detail: "Intégrer Swagger dans NestJS pour documenter l'API de façon interactive.",
+            course: `
+              <div class="course-text">
+                <p>Présenter une documentation d'API claire est indispensable pour le jury de TFE et facilite l'intégration front-end.</p>
+                <p>NestJS intègre un module **Swagger** qui génère automatiquement la spécification OpenAPI à partir du typage TypeScript de vos routes, de vos contrôleurs et de vos DTOs.</p>
+                <p>On utilise des décorateurs spécifiques (ex: <code>@ApiProperty()</code>, <code>@ApiResponse()</code>) pour enrichir la documentation et créer une interface interactive accessible sur l'URL <code>/api/docs</code>.</p>
+              </div>
+            `,
+            example: `// Initialisation de Swagger dans NestJS (main.ts) :\nimport { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';\n\nconst config = new DocumentBuilder()\n  .setTitle('TFE API Hub')\n  .setDescription('API de suivi de formation')\n  .setVersion('1.0')\n  .addBearerAuth()\n  .build();\nconst document = SwaggerModule.createDocument(app, config);\nSwaggerModule.setup('api/docs', app, document);`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel décorateur de propriété Swagger permet de documenter les types de champs de vos DTOs pour qu'ils s'affichent dans la section 'Schemas' de l'interface ?",
+              options: [
+                "@ApiProperty()",
+                "@ApiResponse()",
+                "@ApiOperation()"
+              ],
+              correctIndex: 0,
+              explanation: "Le décorateur @ApiProperty() de @nestjs/swagger documente la propriété de classe dans le schéma Swagger généré."
+            },
+            aiResponses: {
+              "swagger": "Swagger documente les routes de l'API et permet de tester directement les requêtes HTTP depuis le navigateur.",
+              "openapi": "OpenAPI est le standard ouvert décrivant le fonctionnement d'une API REST.",
+              "default": "Des difficultés pour sécuriser Swagger avec des tokens d'authentification ?"
+            }
+          }
+        ]
+      },
+      {
+        id: 5,
+        title: "Semaine 5 : Sécurisation de l'API",
+        subtitle: "Bloc 2 : Cryptographie Bcrypt, Auth JWT & Tests unitaires Jest",
+        days: [
+          {
+            id: "w5-d1",
+            day: "Lundi",
+            topic: "Hachage sécurisé (Bcrypt) dans NestJS",
+            detail: "Chiffrer les mots de passe à l'aide de Bcrypt dans un Service NestJS injectable.",
+            course: `
+              <div class="course-text">
+                <p>Enregistrer des mots de passe en clair dans PostgreSQL (Neon.tech) viole les règles élémentaires de sécurité. On utilise pour cela un **hachage à sens unique (unidirectionnel)**.</p>
+                <p>L'algorithme **Bcrypt** est le standard de l'industrie. On l'encapsule dans un service injectable (ex: <code>HashService</code>) :</p>
+                <ul class="course-list">
+                  <li><strong>Salt (Sel)</strong> : Chaîne aléatoire générée à chaque hachage pour rendre la signature unique et bloquer les attaques par Rainbow Tables.</li>
+                  <li><strong>Facteur de coût (saltRounds)</strong> : Détermine la puissance de calcul requise, ralentissant les attaques par force brute.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Service de hachage NestJS (hash.service.ts) :\nimport { Injectable } from '@nestjs/common';\nimport * as bcrypt from 'bcrypt';\n\n@Injectable()\nexport class HashService {\n  async hashPassword(password: string): Promise<string> {\n    const saltRounds = 12;\n    return bcrypt.hash(password, saltRounds);\n  }\n\n  async comparePassword(password: string, hash: string): Promise<boolean> {\n    return bcrypt.compare(password, hash);\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "custom",
+              html: `
+                <div class="bcrypt-simulator">
+                  <span style="font-size: 11.5px; color: var(--text-muted);">Simulateur de hachage Bcrypt :</span>
+                  <div class="bcrypt-input-row">
+                    <input type="text" class="bcrypt-input" id="bcrypt-pwd" placeholder="Saisir un mot de passe">
+                    <button class="bcrypt-btn" onclick="runBcryptSimulator()">Hacher</button>
+                  </div>
+                  <div class="bcrypt-result" id="bcrypt-result-output">
+                    Entrez un texte pour simuler le hachage dans le HashService.
+                  </div>
+                </div>
+              `
+            },
+            aiResponses: {
+              "bcrypt": "Bcrypt intègre un salage aléatoire automatique pour rendre chaque hash de mot de passe unique.",
+              "hashservice": "Encapsuler bcrypt dans un service NestJS permet de l'injecter facilement dans AuthService.",
+              "default": "Besoin de comprendre la différence entre hachage et chiffrement réversible ?"
+            }
+          },
+          {
+            id: "w5-d2",
+            day: "Mardi",
+            topic: "Authentification avec JSON Web Tokens",
+            detail: "Implémenter l'authentification stateless à l'aide du module @nestjs/jwt.",
+            course: `
+              <div class="course-text">
+                <p>Le **JSON Web Token (JWT)** est un mécanisme d'authentification stateless (sans session stockée en base) composé de trois parties encodées en Base64 : <code>header.payload.signature</code>.</p>
+                <p>Dans NestJS, on intègre le module officiel <code>@nestjs/jwt</code> :</p>
+                <ul class="course-list">
+                  <li>Lors de la connexion, le serveur génère un jeton signé avec une clé secrète stockée dans <code>.env</code>.</li>
+                  <li>Le jeton intègre un payload contenant les données d'identité publiques de l'utilisateur (userId, email, rôles) et une date d'expiration.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Signature d'un jeton JWT dans un service d'authentification (auth.service.ts) :\nimport { Injectable } from '@nestjs/common';\nimport { JwtService } from '@nestjs/jwt';\n\n@Injectable()\nexport class AuthService {\n  constructor(private jwtService: JwtService) {}\n\n  async login(user: any) {\n    const payload = { email: user.email, sub: user.id };\n    return {\n      access_token: this.jwtService.sign(payload, { expiresIn: '1h' }),\n    };\n  }\n}`,
+            diagram: "jwt",
+            activity: {
+              type: "quiz",
+              question: "Quelle partie d'un token JWT garantit que le payload n'a pas été modifié ou altéré par l'utilisateur lors de son transfert ?",
+              options: [
+                "Le Header",
+                "Le Payload",
+                "La Signature"
+              ],
+              correctIndex: 2,
+              explanation: "La signature est calculée à partir du header, du payload et d'une clé secrète. Si un seul octet du payload change, la signature calculée par le serveur ne correspondra plus, invalidant le token."
+            },
+            aiResponses: {
+              "payload": "Le payload stocke les informations de l'utilisateur. Attention, il n'est pas crypté, juste encodé en Base64.",
+              "jwt": "@nestjs/jwt gère la création et la validation des jetons JWT.",
+              "default": "Besoin de configurer la durée d'expiration ou le secret d'un JWT ?"
+            }
+          },
+          {
+            id: "w5-d3",
+            day: "Mercredi",
+            topic: "Sécurisation par Guards NestJS",
+            detail: "Protéger ses routes d'API privées à l'aide de Guards et de stratégies passeport.",
+            course: `
+              <div class="course-text">
+                <p>Dans NestJS, la protection des routes d'API s'effectue à l'aide de **Guards** (classes implémentant l'interface <code>CanActivate</code>).</p>
+                <p>Un Guard intercepte la requête, vérifie si l'utilisateur est autorisé (ex: en décodant et validant le Bearer JWT reçu dans les en-têtes) et renvoie <code>true</code> pour autoriser le passage ou <code>false</code> pour lever une erreur **401 Unauthorized**.</p>
+                <p>On applique le guard sur les contrôleurs ou les routes à protéger avec le décorateur <code>@UseGuards()</code>.</p>
+              </div>
+            `,
+            example: `// Guard de route protégé par JWT (jwt-auth.guard.ts) :\nimport { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';\nimport { JwtService } from '@nestjs/jwt';\n\n@Injectable()\nexport class JwtAuthGuard implements CanActivate {\n  constructor(private jwtService: JwtService) {}\n\n  async canActivate(context: ExecutionContext): Promise<boolean> {\n    const request = context.switchToHttp().getRequest();\n    const token = this.extractTokenFromHeader(request);\n    if (!token) throw new UnauthorizedException('Token absent');\n    try {\n      const payload = await this.jwtService.verifyAsync(token);\n      request['user'] = payload; // Injection de l'utilisateur dans la requête\n      return true;\n    } catch {\n      throw new UnauthorizedException('Token invalide');\n    }\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel décorateur NestJS permet d'appliquer un Guard d'authentification sur une route spécifique d'un contrôleur ?",
+              options: [
+                "@UseGuards()",
+                "@Injectable()",
+                "@Catch()"
+              ],
+              correctIndex: 0,
+              explanation: "Le décorateur @UseGuards() prend en argument un ou plusieurs Guards à exécuter avant de traiter la route ciblée."
+            },
+            aiResponses: {
+              "guard": "Les Guards s'exécutent après les middlewares, mais avant les intercepteurs et le contrôleur de route.",
+              "canactivate": "Méthode obligatoire d'un Guard renvoyant un booléen pour valider ou rejeter l'accès.",
+              "default": "Besoin de créer un Guard gérant des rôles utilisateurs (Admin, Stagiaire) ?"
+            }
+          },
+          {
+            id: "w5-d4",
+            day: "Jeudi",
+            topic: "Sécurisation des en-têtes (CORS & Helmet)",
+            detail: "Durcir la sécurité du serveur NestJS avec Helmet et la configuration CORS.",
+            course: `
+              <div class="course-text">
+                <p>En production, le serveur NestJS doit être protégé contre les vulnérabilités web classiques répertoriées par l'OWASP :</p>
+                <ul class="course-list">
+                  <li><strong>CORS (Cross-Origin Resource Sharing)</strong> : Sécurité côté navigateur. Le serveur doit autoriser explicitement le domaine de l'application Angular (ex: <code>https://tfe-front.vercel.app</code>) à requêter ses routes via l'en-tête <code>Access-Control-Allow-Origin</code>.</li>
+                  <li><strong>Helmet</strong> : Bibliothèque qui configure des en-têtes HTTP de sécurité pour bloquer les attaques de détournement de clic (Clickjacking) ou les injections de scripts (XSS).</li>
+                </ul>
+              </div>
+            `,
+            example: `// Configuration de CORS et Helmet dans NestJS (main.ts) :\nimport { NestFactory } from '@nestjs/core';\nimport helmet from 'helmet';\nimport { AppModule } from './app.module';\n\nasync function bootstrap() {\n  const app = await NestFactory.create(AppModule);\n  \n  app.use(helmet()); // Sécurise les en-têtes HTTP de réponse\n  \n  app.enableCors({\n    origin: 'https://tfe-front.vercel.app',\n    methods: 'GET,POST,PUT,DELETE,PATCH',\n    allowedHeaders: 'Content-Type,Authorization',\n  });\n  \n  await app.listen(3000);\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel mécanisme réseau empêche un site pirate (ex: site-pirate.com) de lire les réponses de votre API NestJS privée depuis un navigateur client ?",
+              options: [
+                "Le fichier .env",
+                "La politique CORS (Cross-Origin Resource Sharing)",
+                "L'utilisation de bcrypt"
+              ],
+              correctIndex: 1,
+              explanation: "CORS est un mécanisme de sécurité du navigateur qui restreint le partage de ressources cross-origin sauf autorisation explicite du serveur."
+            },
+            aiResponses: {
+              "cors": "Le protocole CORS permet d'indiquer au navigateur quelles origines sont habilitées à lire vos réponses d'API.",
+              "helmet": "Helmet est un ensemble de middlewares configurant des en-têtes de sécurité recommandés.",
+              "default": "Besoin de configurer des filtres CORS fins pour le déploiement de votre TFE ?"
+            }
+          },
+          {
+            id: "w5-d5",
+            day: "Vendredi",
+            topic: "Tests unitaires Jest & TestingModule",
+            detail: "Tester ses contrôleurs et services NestJS à l'aide de Jest et de la classe TestingModule.",
+            course: `
+              <div class="course-text">
+                <p>NestJS intègre le framework de test **Jest** et fournit la classe utilitaire <strong>TestingModule</strong>.</p>
+                <p>Le <code>TestingModule</code> simule le conteneur d'injection de NestJS en mémoire. Il permet d'instancier un composant (ex: un service ou un contrôleur) en isolant et en **mockant** (simulant) ses dépendances réelles (comme PrismaService) pour garantir des tests unitaires rapides et fiables.</p>
+              </div>
+            `,
+            example: `// Exemple de test de service NestJS (course.service.spec.ts) :\nimport { Test, TestingModule } from '@nestjs/testing';\nimport { CourseService } from './course.service';\nimport { PrismaService } from './prisma.service';\n\ndescribe('CourseService', () => {\n  let service: CourseService;\n\n  beforeEach(async () => {\n    const module: TestingModule = await Test.createTestingModule({\n      providers: [CourseService, PrismaService],\n    }).compile();\n\n    service = module.get<CourseService>(CourseService);\n  });\n\n  it('devrait être défini', () => {\n    expect(service).toBeDefined();\n  });\n});`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle classe fournie par le package @nestjs/testing sert à compiler un module virtuel en mémoire pour exécuter des tests unitaires ?",
+              options: [
+                "TestingModule",
+                "JestModule",
+                "PrismaClient"
+              ],
+              correctIndex: 0,
+              explanation: "La classe TestingModule compile un conteneur d'injection virtuel en mémoire, idéal pour isoler et tester chaque classe séparément."
+            },
+            aiResponses: {
+              "jest": "Jest est le framework de tests par défaut de NestJS pour exécuter vos assertions.",
+              "mock": "Faire un mock consiste à remplacer un service réel (ex: accès base PostgreSQL) par une fonction simulée pour tester un comportement.",
+              "default": "Des difficultés pour mocker PrismaService dans vos tests unitaires ?"
+            }
+          }
+        ]
+      },
+      {
+        id: 6,
+        title: "Semaine 6 : Intégration UI avec Angular & Bootstrap 5",
+        subtitle: "Bloc 2 : Composants Standalone, Layout & Grille Grid System",
+        days: [
+          {
+            id: "w6-d1",
+            day: "Lundi",
+            topic: "Angular & Composants Standalone",
+            detail: "Comprendre la structure d'une application Angular moderne basée sur les composants Standalone.",
+            course: `
+              <div class="course-text">
+                <p>Depuis la version 15, **Angular** généralise le modèle de développement basé sur les **Composants Standalone**.</p>
+                <p>Un composant Standalone ne dépend plus d'un fichier <code>@NgModule</code> pour être déclaré. Il s'auto-déclare autonome à l'aide de l'attribut <code>standalone: true</code> dans son décorateur <code>@Component</code>. C'est à ce niveau qu'il importe directement ses dépendances de template (autres composants, directives comme NgIf, ou modules comme ReactiveFormsModule).</p>
+                <p>Cette approche rend l'arborescence de fichiers beaucoup plus simple à comprendre et réduit le code boilerplate.</p>
+              </div>
+            `,
+            example: `// Exemple de composant Standalone Angular (app.component.ts) :\nimport { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true, // Déclaré autonome\n  imports: [CommonModule], // Importation des directives de base\n  template: '<h1>Bienvenue sur le TFE Hub</h1>',\n  styles: ['h1 { color: #fff; }']\n})\nexport class AppComponent {}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle propriété du décorateur @Component indique à Angular que le composant est autonome et n'a pas besoin d'être déclaré dans un NgModule ?",
+              options: [
+                "imports: []",
+                "standalone: true",
+                "selector: 'app-root'"
+              ],
+              correctIndex: 1,
+              explanation: "En passant 'standalone: true', le composant peut être directement importé et utilisé sans déclaration intermédiaire dans un module classique."
+            },
+            aiResponses: {
+              "standalone": "Les composants Standalone simplifient le développement Angular en supprimant le besoin des fichiers d'architecture NgModule.",
+              "imports": "Le tableau imports déclare les dépendances (directives, modules) requises par le template du composant.",
+              "default": "Besoin d'aide pour convertir un composant Angular classique en composant Standalone ?"
+            }
+          },
+          {
+            id: "w6-d2",
+            day: "Mardi",
+            topic: "Flexbox Layout",
+            detail: "Maîtriser Flexbox pour les alignements et agencements d'interfaces mobiles.",
+            course: `
+              <div class="course-text">
+                <p>Le module de mise en page unidimensionnel <strong>Flexbox (Flexible Box)</strong> facilite l'alignement et la répartition de l'espace entre les éléments d'un conteneur, même lorsque leurs dimensions sont inconnues ou dynamiques.</p>
+                <p>Deux axes sont à distinguer :</p>
+                <ul class="course-list">
+                  <li><strong>Axe principal</strong> (défini par <code>flex-direction</code>) : Aligne les éléments horizontalement (row) ou verticalement (column).</li>
+                  <li><strong>Alignements</strong> : <code>justify-content</code> gère la distribution sur l'axe principal, <code>align-items</code> gère l'axe transversal.</li>
+                </ul>
+              </div>
+            `,
+            example: `/* Alignement horizontal centré et réparti de boutons mobiles */\n.nav-container {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center;\n}`,
+            diagram: "none",
+            activity: {
+              type: "custom",
+              html: `
+                <div class="flexbox-sandbox">
+                  <span style="font-size: 11px;">Bac à sable Flexbox interactif :</span>
+                  <div class="flex-preview-area" id="flex-preview">
+                    <div class="flex-box-item">1</div>
+                    <div class="flex-box-item">2</div>
+                    <div class="flex-box-item">3</div>
+                  </div>
+                  <div class="flex-controls">
+                    <select class="sandbox-select" id="flex-dir" onchange="runFlexboxSimulator()">
+                      <option value="row">flex-direction: row</option>
+                      <option value="column">flex-direction: column</option>
+                    </select>
+                    <select class="sandbox-select" id="flex-just" onchange="runFlexboxSimulator()">
+                      <option value="flex-start">justify-content: flex-start</option>
+                      <option value="center">justify-content: center</option>
+                      <option value="space-between">justify-content: space-between</option>
+                      <option value="space-around">justify-content: space-around</option>
+                    </select>
+                  </div>
+                </div>
+              `
+            },
+            aiResponses: {
+              "justify-content": "justify-content aligne les éléments le long de l'axe principal (par défaut horizontal).",
+              "flex-wrap": "flex-wrap permet aux éléments flex de revenir à la ligne sur plusieurs rangées si l'espace manque.",
+              "default": "Testez les commandes Flexbox dans le bac à sable ! Des questions sur les flex-grow ou flex-basis ?"
+            }
+          },
+          {
+            id: "w6-d3",
+            day: "Mercredi",
+            topic: "Gabarits Angular & Directives structurelles",
+            detail: "Manipuler l'affichage avec la nouvelle syntaxe Control Flow d'Angular (v17+).",
+            course: `
+              <div class="course-text">
+                <p>Dans ses gabarits HTML (templates), Angular permet d'ajouter de la logique d'affichage dynamique.</p>
+                <p>Depuis Angular 17, l'ancienne syntaxe à base de directives structurelles (<code>*ngIf</code>, <code>*ngFor</code>) est remplacée par le nouveau **Control Flow déclaratif** intégré (syntaxe en <code>@if</code> et <code>@for</code>) :</p>
+                <ul class="course-list">
+                  <li><strong>@if / @else</strong> : Plus rapide d'exécution, ne nécessite aucun import de module externe.</li>
+                  <li><strong>@for</strong> : Permet de boucler sur un tableau, et intègre de façon obligatoire l'attribut de performance <code>track</code> pour identifier chaque élément et optimiser le recalcul du DOM.</li>
+                </ul>
+              </div>
+            `,
+            example: `<!-- Template HTML Angular 17+ (suivi de cours) -->\n\n@if (loading) {\n  <p>Chargement des cours...</p>\n} @else {\n  <div class="grid">\n    @for (course of courses; track course.id) {\n      <article>{{ course.title }}</article>\n    } @empty {\n      <p>Aucun cours disponible.</p>\n    }\n  </div>\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Dans le nouveau Control Flow d'Angular (@for), quel paramètre est obligatoire pour optimiser les performances de rendu du DOM ?",
+              options: [
+                "track",
+                "let i = index",
+                "standalone"
+              ],
+              correctIndex: 0,
+              explanation: "Le paramètre 'track' indique à Angular quelle propriété unique (comme l'id) utiliser pour suivre les éléments du tableau dans le DOM."
+            },
+            aiResponses: {
+              "control flow": "La syntaxe @if / @for d'Angular 17+ offre de meilleures performances par rapport aux anciennes directives *ngIf/*ngFor.",
+              "directives": "Les directives modifient l'aspect ou le comportement d'un élément du DOM (ex: ngClass, ngStyle).",
+              "default": "Besoin de convertir vos modèles de templates Angular 16 vers le nouveau Control Flow ?"
+            }
+          },
+          {
+            id: "w6-d4",
+            day: "Jeudi",
+            topic: "Media Queries & Responsive Bootstrap",
+            detail: "Concevoir un layout adaptatif à l'aide des points d'arrêt (breakpoints) de Bootstrap 5.",
+            course: `
+              <div class="course-text">
+                <p>Dans l'approche Mobile-First, la mise en page doit s'adapter en fonction de la résolution de l'écran.</p>
+                <p>On s'appuie pour cela sur les **Media Queries** CSS ou sur les points d'arrêt (**Breakpoints**) natifs de la grille Bootstrap 5 :</p>
+                <ul class="course-list">
+                  <li><code>col-12</code> : Largeur complète (100%) sur écran mobile (valeur par défaut).</li>
+                  <li><code>col-md-6</code> : Largeur de 50% sur les tablettes et plus grands écrans (Breakpoint MD à 768px).</li>
+                  <li><code>col-lg-4</code> : Largeur de 33% sur les écrans d'ordinateurs (Breakpoint LG à 992px).</li>
+                </ul>
+              </div>
+            `,
+            example: `<!-- Grille responsive Bootstrap 5 intégrée dans Angular -->\n<div class="container">\n  <div class="row">\n    <!-- 1 colonne sur mobile, 3 sur grand écran -->\n    <div class="col-12 col-md-6 col-lg-4" *ngFor="let item of list">\n      <div class="card p-3">Contenu adaptatif</div>\n    </div>\n  </div>\n</div>`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel point d'arrêt Bootstrap 5 (Breakpoint) correspond aux écrans d'une largeur supérieure ou égale à 768 pixels (tablettes) ?",
+              options: [
+                "sm (small)",
+                "md (medium)",
+                "lg (large)"
+              ],
+              correctIndex: 1,
+              explanation: "Le préfixe 'md' de Bootstrap 5 correspond aux tablettes et petits écrans horizontaux à partir de 768px."
+            },
+            aiResponses: {
+              "media query": "Permet de conditionner l'application des règles de style CSS à la largeur physique de la fenêtre de lecture.",
+              "grid": "La grille de Bootstrap 5 divise la page en 12 colonnes virtuelles adaptatives.",
+              "default": "Besoin de conseils pour rendre vos formulaires Angular responsives sur mobile ?"
+            }
+          },
+          {
+            id: "w6-d5",
+            day: "Vendredi",
+            topic: "Change Detection & Cycles Angular",
+            detail: "Comprendre les cycles de rendu et le mécanisme de détection des changements (Zone.js).",
+            course: `
+              <div class="course-text">
+                <p>Angular s'appuie sur un système automatique appelé **Change Detection (Détection des changements)** pour s'assurer que les données affichées dans l'HTML correspondent en permanence aux valeurs de votre classe TypeScript.</p>
+                <p>Historiquement orchestré par **Zone.js**, Angular intercepte chaque événement utilisateur (clic, retour d'API, timer) pour parcourir l'arbre des composants et réafficher les parties modifiées.</p>
+                <p class="course-subtitle-internal">Optimisation de performance :</p>
+                <p>Sur de grandes applications, utiliser la stratégie <code>changeDetection: ChangeDetectionStrategy.OnPush</code> permet d'indiquer à Angular de ne recalculer un composant que si ses propriétés d'entrées (ses \`@Input()\`) changent d'instance, allégeant grandement la charge du CPU sur smartphone.</p>
+              </div>
+            `,
+            example: `// Optimisation OnPush sur un composant Angular :\nimport { Component, ChangeDetectionStrategy, Input } from '@angular/core';\n\n@Component({\n  selector: 'app-item',\n  standalone: true,\n  changeDetection: ChangeDetectionStrategy.OnPush, // Rendu optimisé\n  template: '<p>{{ label }}</p>'\n})\nexport class ItemComponent {\n  @Input() label: string = '';\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle stratégie de détection de changements évite d'inspecter un composant Angular tant que ses propriétés d'entrées (@Input) ne changent pas ?",
+              options: [
+                "ChangeDetectionStrategy.Default",
+                "ChangeDetectionStrategy.OnPush",
+                "Zone.js Strategy"
+              ],
+              correctIndex: 1,
+              explanation: "La stratégie OnPush permet de désactiver la détection de changements par défaut de Zone.js pour optimiser les performances de rendu."
+            },
+            aiResponses: {
+              "zone.js": "Zone.js est la bibliothèque qui surveille les tâches asynchrones d'Angular pour planifier les rafraîchissements.",
+              "onpush": "OnPush est crucial pour fluidifier l'interface graphique sur les navigateurs mobiles.",
+              "default": "Des questions sur le cycle de vie ou sur l'optimisation des rendus sous Angular ?"
+            }
+          }
+        ]
+      },
+      {
+        id: 7,
+        title: "Semaine 7 : Dynamisation & Gestion d'État (Angular)",
+        subtitle: "Bloc 2 : Reactive Forms, Services & RxJS Observables",
+        days: [
+          {
+            id: "w7-d1",
+            day: "Lundi",
+            topic: "Liaisons de Données : Input & Output",
+            detail: "Communication parents-enfants sous Angular à l'aide de @Input() et @Output().",
+            course: `
+              <div class="course-text">
+                <p>Dans l'architecture de composants d'Angular, les données se déplacent selon un flux unidirectionnel structuré :</p>
+                <ul class="course-list">
+                  <li><strong>@Input()</strong> : Décorateur qui permet à un composant parent de transmettre une propriété (donnée descendante) à un composant enfant (équivalent des Props en React/Vue).</li>
+                  <li><strong>@Output()</strong> : Décorateur associé à un objet <code>EventEmitter</code> qui permet au composant enfant de renvoyer un événement (action ascendante) vers le parent.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Composant Enfant (course-card.component.ts) :\nimport { Component, Input, Output, EventEmitter } from '@angular/core';\n\n@Component({\n  selector: 'app-card',\n  standalone: true,\n  template: '<button (click)=\"notifier()\">{{ titre }}</button>'\n})\nexport class CardComponent {\n  @Input() titre: string = '';\n  @Output() valider = new EventEmitter<void>();\n\n  notifier() { this.valider.emit(); }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel objet Angular doit-on instancier et associer au décorateur @Output() pour émettre un événement vers le composant parent ?",
+              options: [
+                "EventEmitter",
+                "BehaviorSubject",
+                "HttpClient"
+              ],
+              correctIndex: 0,
+              explanation: "EventEmitter est la classe d'Angular utilisée pour émettre des événements personnalisés depuis un composant enfant."
+            },
+            aiResponses: {
+              "input": "@Input() rend un attribut du composant enfant accessible pour l'écriture depuis le template du parent.",
+              "output": "@Output() s'associe à un EventEmitter pour envoyer des signaux ou des données vers le haut.",
+              "default": "Besoin d'aide pour faire communiquer deux composants Angular ?"
+            }
+          },
+          {
+            id: "w7-d2",
+            day: "Mardi",
+            topic: "Reactive Forms & Validations",
+            detail: "Concevoir des formulaires sécurisés à l'aide de ReactiveFormsModule et FormControl.",
+            course: `
+              <div class="course-text">
+                <p>Angular propose deux approches pour gérer les formulaires. Pour les projets professionnels, l'utilisation des <strong>Formulaires Réactifs (Reactive Forms)</strong> est obligatoire.</p>
+                <p>Ils fournissent un accès direct et synchrone au modèle de données sous-jacent à l'aide des classes <code>FormGroup</code> et <code>FormControl</code>, facilitant la validation des entrées utilisateur en temps réel.</p>
+              </div>
+            `,
+            example: `// Déclaration de formulaire réactif dans Angular :\nimport { Component } from '@angular/core';\nimport { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';\n\n@Component({\n  standalone: true,\n  imports: [ReactiveFormsModule],\n  template: \`\n    <form [formGroup]=\"loginForm\">\n      <input formControlName=\"email\" type=\"email\" />\n      <button [disabled]=\"loginForm.invalid\">Se connecter</button>\n    </form>\n  \`\n})\nexport class LoginComponent {\n  loginForm = new FormGroup({\n    email: new FormControl('', [Validators.required, Validators.email]),\n  });\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle classe d'Angular représente le modèle de contrôle d'un champ de saisie unique (comme un e-mail) dans un formulaire réactif ?",
+              options: [
+                "FormGroup",
+                "FormControl",
+                "FormBuilder"
+              ],
+              correctIndex: 1,
+              explanation: "FormControl encapsule la valeur, l'état de validation (valid/invalid) et l'historique d'un champ de saisie isolé."
+            },
+            aiResponses: {
+              "reactive forms": "Les formulaires réactifs offrent un contrôle complet, asynchrone et testable sur vos saisies côté client.",
+              "validators": "La classe Validators d'Angular propose des contrôles par défaut comme Validators.required ou Validators.email.",
+              "default": "Besoin d'aide pour écrire un validateur synchrone ou asynchrone personnalisé ?"
+            }
+          },
+          {
+            id: "w7-d3",
+            day: "Mercredi",
+            topic: "Services & Injection de Dépendances",
+            detail: "Centraliser l'état et la logique de l'application dans des services Angular injectables.",
+            course: `
+              <div class="course-text">
+                <p>Les composants Angular doivent se limiter à l'affichage et déléguer toute la logique métier et la récupération de données à des **Services**.</p>
+                <p>Dans Angular, les services sont des classes simples décorées avec <code>@Injectable({ providedIn: 'root' })</code>, ce qui en fait des singletons uniques (instanciés une seule fois pour tout le site) injectables dans n'importe quel constructeur de composant.</p>
+              </div>
+            `,
+            example: `// Exemple de Service singleton partagé (course.service.ts) :\nimport { Injectable } from '@angular/core';\n\n@Injectable({\n  providedIn: 'root' // Disponible de façon globale dans l'application\n})\nexport class CourseService {\n  private coursesList: string[] = [];\n\n  addCourse(title: string) {\n    this.coursesList.push(title);\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle option du décorateur @Injectable permet d'enregistrer le service comme un singleton disponible de manière globale dans toute l'application ?",
+              options: [
+                "standalone: true",
+                "providedIn: 'root'",
+                "inject: 'global'"
+              ],
+              correctIndex: 1,
+              explanation: "providedIn: 'root' enregistre le service dans l'injecteur racine de l'application, évitant de devoir le déclarer dans chaque composant."
+            },
+            aiResponses: {
+              "service": "Les services centralisent la logique applicative (ex: stockage en localStorage ou appels API).",
+              "singleton": "Un patron de conception singleton garantit qu'une classe n'a qu'une seule instance globale.",
+              "default": "Besoin d'aide pour injecter un service dans un de vos composants ?"
+            }
+          },
+          {
+            id: "w7-d4",
+            day: "Jeudi",
+            topic: "Programmation Réactive avec RxJS",
+            detail: "Manipuler les flux de données asynchrones avec RxJS, Observables et BehaviorSubject.",
+            course: `
+              <div class="course-text">
+                <p>Angular intègre nativement la bibliothèque **RxJS** pour gérer l'asynchronisme sous forme de **flux de données (Streams)**.</p>
+                <ul class="course-list">
+                  <li><strong>Observable</strong> : Flux de données à écouter à l'aide de la méthode <code>.subscribe()</code>.</li>
+                  <li><strong>BehaviorSubject</strong> : Un type spécial d'Observable (un sujet) qui possède une valeur par défaut et mémorise la dernière valeur émise. Idéal pour stocker l'état global de progression ou les infos de l'utilisateur connecté.</li>
+                  <li><strong>Opérateurs de pipe</strong> : Fonctions RxJS (ex: <code>map</code>, <code>filter</code>, <code>switchMap</code>) permettant de transformer le flux de données de manière déclarative avant son affichage.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Utilisation d'un BehaviorSubject pour stocker l'état de connexion :\nimport { BehaviorSubject } from 'rxjs';\n\nexport class AuthService {\n  // Stocke l'état réactif (false au démarrage)\n  private loggedIn$ = new BehaviorSubject<boolean>(false);\n  \n  // Expose le flux en lecture seule\n  isLoggedIn = this.loggedIn$.asObservable();\n\n  setLoginStatus(status: boolean) {\n    this.loggedIn$.next(status); // Émet la nouvelle valeur\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle méthode devez-vous appeler sur un BehaviorSubject pour émettre une nouvelle valeur dans le flux réactif ?",
+              options: [
+                "subscribe()",
+                "next()",
+                "emit()"
+              ],
+              correctIndex: 1,
+              explanation: "La méthode next() pousse la nouvelle valeur fournie dans le flux, provoquant la mise à jour immédiate de tous les écouteurs connectés."
+            },
+            aiResponses: {
+              "observable": "Un flux asynchrone sur lequel on peut s'abonner pour écouter les émissions de données.",
+              "behaviorsubject": "Un sujet stockant l'état courant et le distribuant à tout nouvel abonné.",
+              "default": "Besoin de comprendre la différence entre Subject, BehaviorSubject et Observable ?"
+            }
+          },
+          {
+            id: "w7-d5",
+            day: "Vendredi",
+            topic: "Cycle de vie des Composants",
+            detail: "Maîtriser les interfaces OnInit et OnDestroy pour prévenir les fuites de mémoire.",
+            course: `
+              <div class="course-text">
+                <p>Un composant Angular passe par plusieurs étapes lors de sa durée de vie (création, rendu, destruction).</p>
+                <p>Pour interagir avec ces étapes, la classe TypeScript doit implémenter des interfaces de cycle de vie :</p>
+                <ul class="course-list">
+                  <li><strong>OnInit (ngOnInit)</strong> : Exécuté une fois que le composant est créé et que ses propriétés d'entrées sont initialisées. Moment idéal pour s'abonner à des Observables ou charger les données.</li>
+                  <li><strong>OnDestroy (ngOnDestroy)</strong> : Exécuté juste avant le retrait du composant du DOM. Il est obligatoire d'y désinscrire (<code>unsubscribe()</code>) tous les abonnements RxJS manuels pour éviter les fuites de mémoire (Memory Leaks).</li>
+                </ul>
+              </div>
+            `,
+            example: `// Désinscription propre RxJS (prevent memory leak) :\nimport { Component, OnInit, OnDestroy } from '@angular/core';\nimport { Subscription } from 'rxjs';\nimport { CourseService } from './course.service';\n\n@Component({ ... })\nexport class CourseListComponent implements OnInit, OnDestroy {\n  private sub!: Subscription;\n  constructor(private service: CourseService) {}\n\n  ngOnInit() {\n    this.sub = this.service.isLoggedIn.subscribe(val => console.log(val));\n  }\n\n  ngOnDestroy() {\n    this.sub.unsubscribe(); // Libération de la mémoire lors de la fermeture de la page\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Pourquoi est-il crucial de se désabonner (unsubscribe) des Observables manuels dans la méthode ngOnDestroy ?",
+              options: [
+                "Pour forcer le serveur NestJS à fermer la connexion PostgreSQL",
+                "Pour libérer la mémoire vive et éviter que des écouteurs inactifs ne continuent de s'exécuter en tâche de fond (fuite de mémoire)",
+                "Pour désactiver le style CSS de la page"
+              ],
+              correctIndex: 1,
+              explanation: "Les abonnements non libérés restent actifs en mémoire après la fermeture de la page, exécutant inutilement les fonctions et ralentissant le navigateur."
+            },
+            aiResponses: {
+              "ngoninit": "Hook idéal d'initialisation du composant après l'évaluation des propriétés d'entrée.",
+              "ngondestroy": "Hook de nettoyage indispensable pour libérer les ressources, timers et abonnements.",
+              "default": "Besoin de conseils pour gérer proprement vos abonnements avec l'opérateur takeUntil ?"
+            }
+          }
+        ]
+      },
+      {
+        id: 8,
+        title: "Semaine 8 : Connexion Full-Stack (Angular ➔ NestJS)",
+        subtitle: "Bloc 2 : HttpClient, Intercepteurs & Guards de routage",
+        days: [
+          {
+            id: "w8-d1",
+            day: "Lundi",
+            topic: "Appels d'API avec HttpClient",
+            detail: "Utiliser le service HttpClient d'Angular pour consommer l'API NestJS.",
+            course: `
+              <div class="course-text">
+                <p>Pour communiquer avec le serveur d'API NestJS, l'application Angular utilise son module natif **HttpClient**.</p>
+                <p>Contrairement à l'API Fetch classique qui retourne des Promises, le service <code>HttpClient</code> retourne des **Observables RxJS**.</p>
+                <p>Cela permet de combiner facilement les retours d'API avec d'autres flux réactifs à l'aide des opérateurs de pipe.</p>
+              </div>
+            `,
+            example: `// Service de requêtes API (api.service.ts) :\nimport { Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\nimport { Observable } from 'rxjs';\n\n@Injectable({ providedIn: 'root' })\nexport class ApiService {\n  constructor(private http: HttpClient) {}\n\n  getCourses(): Observable<any[]> {\n    return this.http.get<any[]>('http://localhost:3000/courses');\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel est le type de retour des méthodes (get, post) du service HttpClient d'Angular ?",
+              options: [
+                "Une Promise JavaScript",
+                "Un Observable RxJS",
+                "Une chaîne JSON"
+              ],
+              correctIndex: 1,
+              explanation: "Toutes les méthodes de HttpClient d'Angular renvoient des Observables RxJS, permettant de gérer les requêtes comme des flux réactifs."
+            },
+            aiResponses: {
+              "httpclient": "HttpClient est le service d'Angular gérant les requêtes HTTP asynchrones en s'appuyant sur RxJS.",
+              "rxjs": "RxJS permet de gérer et de combiner facilement les retours asynchrones de vos requêtes.",
+              "default": "Des questions sur l'importation de HttpClient ou la gestion des requêtes réseau ?"
+            }
+          },
+          {
+            id: "w8-d2",
+            day: "Mardi",
+            topic: "Intercepteurs HTTP",
+            detail: "Injecter automatiquement le token JWT dans toutes les requêtes HTTP sortantes.",
+            course: `
+              <div class="course-text">
+                <p>Plutôt que de devoir ajouter manuellement le token d'authentification dans les en-têtes HTTP à chaque appel d'API, Angular fournit les **Intercepteurs HTTP**.</p>
+                <p>Un intercepteur interceptant chaque requête HTTP sortante :</p>
+                <ol class="course-list">
+                  <li>Il récupère le token d'accès JWT sauvegardé en local.</li>
+                  <li>Il clone la requête d'origine (les requêtes sont immuables).</li>
+                  <li>Il y insère l'en-tête de sécurité <code>Authorization: Bearer &lt;token&gt;</code>.</li>
+                  <li>Il transmet la requête modifiée au reste de la chaîne.</li>
+                </ol>
+              </div>
+            `,
+            example: `// Intercepteur HTTP fonctionnel Angular 15+ (auth.interceptor.ts) :\nimport { HttpInterceptorFn } from '@angular/common/http';\n\nexport const authInterceptor: HttpInterceptorFn = (req, next) => {\n  const token = localStorage.getItem('jwt_token');\n  \n  if (token) {\n    // Clonage de la requête pour y ajouter les en-têtes d'autorisation\n    const cloned = req.clone({\n      setHeaders: { Authorization: \`Bearer \${token}\` }\n    });\n    return next(cloned);\n  }\n  return next(req);\n};`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Pourquoi est-il nécessaire de cloner (req.clone) l'objet de requête à l'intérieur d'un intercepteur HTTP ?",
+              options: [
+                "Parce que l'objet de requête d'origine est immuable (read-only) par conception pour éviter les effets de bord",
+                "Pour doubler la vitesse d'envoi de la requête",
+                "Pour chiffrer les données automatiquement"
+              ],
+              correctIndex: 0,
+              explanation: "Par sécurité et intégrité de flux, les requêtes HTTP d'Angular sont immuables. On doit les cloner pour y appliquer des modifications d'en-têtes."
+            },
+            aiResponses: {
+              "intercepteur": "Les intercepteurs simplifient le code en centralisant l'injection du token d'authentification.",
+              "immuable": "Indique que l'objet ne peut être modifié après sa création, protégeant l'état de la requête.",
+              "default": "Besoin d'aide pour configurer votre intercepteur dans l'application ?"
+            }
+          },
+          {
+            id: "w8-d3",
+            day: "Mercredi",
+            topic: "Stockage sécurisé du Token",
+            detail: "Stockage sécurisé du Token côté client (LocalStorage vs Cookies HttpOnly).",
+            course: `
+              <div class="course-text">
+                <p>Où stocker le jeton JWT côté client pour maintenir la session ouverte ? Deux stratégies principales existent avec des niveaux de sécurité différents :</p>
+                <ul class="course-list">
+                  <li><strong>LocalStorage</strong> : Très simple à coder en JavaScript. Cependant, il est vulnérable aux attaques de type <strong>XSS (Cross-Site Scripting)</strong> : si un script malveillant tiers s'exécute sur votre page, il peut lire et voler le jeton en clair.</li>
+                  <li><strong>Cookie avec attribut HttpOnly</strong> : Le jeton est stocké sous forme de cookie envoyé par le serveur. L'attribut <code>HttpOnly</code> interdit tout accès au cookie via le code JavaScript du navigateur, neutralisant les attaques XSS de vol de token. Le cookie est transmis automatiquement à chaque requête d'API.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Stockage simple en LocalStorage (JavaScript) - Sensible XSS :\nlocalStorage.setItem('token', token);\nconst token = localStorage.getItem('token');\n\n// Déclaration sécurisée par Cookie côté Serveur (Express) :\nres.cookie('token', token, {\n  httpOnly: true,\n  secure: true, // Uniquement via HTTPS en production\n  sameSite: 'strict'\n});`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Pourquoi l'utilisation de cookies avec l'attribut HttpOnly est-elle plus sécurisée que le LocalStorage pour stocker un token d'authentification ?",
+              options: [
+                "Parce qu'ils prennent moins de place en mémoire",
+                "Parce que le code JavaScript client ne peut pas y accéder, empêchant le vol de session par des scripts injectés (failles XSS)",
+                "Parce qu'ils encryptent automatiquement le mot de passe de l'utilisateur"
+              ],
+              correctIndex: 1,
+              explanation: "L'attribut HttpOnly empêche l'accès direct aux cookies via document.cookie en JavaScript, les rendant inaccessibles aux scripts XSS malveillants."
+            },
+            aiResponses: {
+              "xss": "XSS (Cross-Site Scripting) est une faille permettant d'injecter et d'exécuter des scripts JS malveillants sur un site de confiance.",
+              "httponly": "HttpOnly est un drapeau configuré sur un cookie interdisant son accès par le JavaScript du navigateur.",
+              "default": "Vous hésitez entre LocalStorage et Cookies HttpOnly pour votre TFE ? Je vous présente les compromis."
+            }
+          },
+          {
+            id: "w8-d4",
+            day: "Jeudi",
+            topic: "Guards de routage (canActivate)",
+            detail: "Protéger les routes de l'application Angular à l'aide de Guards fonctionnels.",
+            course: `
+              <div class="course-text">
+                <p>Dans Angular, pour interdire l'accès à certaines pages (ex: profil étudiant) aux utilisateurs non-connectés, on utilise les **Guards de routage**.</p>
+                <p>Depuis les versions récentes, on utilise des **Guards fonctionnels** basés sur l'interface <code>CanActivateFn</code>. Ils interceptent la navigation vers une route, vérifient l'état de connexion, et autorisent la transition ou redirigent l'utilisateur vers la page de login.</p>
+              </div>
+            `,
+            example: `// Guard fonctionnel de sécurité (auth.guard.ts) :\nimport { inject } from '@angular/core';\nimport { Router, CanActivateFn } from '@angular/router';\n\nexport const authGuard: CanActivateFn = (route, state) => {\n  const router = inject(Router);\n  const estConnecte = !!localStorage.getItem('jwt_token');\n  \n  if (estConnecte) return true; // Accès autorisé\n  \n  router.navigate(['/login']); // Redirection\n  return false;\n};`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle fonction d'Angular permet d'injecter un service (comme Router) à l'intérieur d'un Guard fonctionnel sans passer par un constructeur ?",
+              options: [
+                "inject()",
+                "getService()",
+                "use()"
+              ],
+              correctIndex: 0,
+              explanation: "La fonction inject() permet d'accéder au conteneur d'injection d'Angular au sein des fonctions de guards ou d'intercepteurs."
+            },
+            aiResponses: {
+              "guard": "Les Guards de routage sécurisent l'accès aux pages graphiques de l'application côté navigateur.",
+              "inject": "La fonction inject() d'Angular permet d'utiliser l'injection de dépendances en dehors des classes constructeurs.",
+              "default": "Besoin d'aide pour associer le Guard à votre configuration de routes ?"
+            }
+          },
+          {
+            id: "w8-d5",
+            day: "Vendredi",
+            topic: "UX de Transition & États de chargement",
+            detail: "Gérer l'expérience utilisateur (UX) lors des phases d'attente réseau de l'API.",
+            course: `
+              <div class="course-text">
+                <p>La qualité ergonomique de l'application dépend de la gestion des temps d'attente d'appels asynchrones.</p>
+                <p class="course-subtitle-internal">Les bonnes pratiques de transition UX :</p>
+                <ul class="course-list">
+                  <li><strong>Loading State (Indicateurs)</strong> : Afficher un spinner ou un squelette (Skeleton block) dès qu'une requête HTTP est émise et le désactiver une fois terminée.</li>
+                  <li><strong>Gestion d'erreur didactique</strong> : Ne jamais afficher les erreurs de stack trace brutes au client. Affichez une alerte Bootstrap en français pour rassurer l'utilisateur.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Gestion réactive du loader dans un composant Angular :\nimport { Component } from '@angular/core';\nimport { finalize } from 'rxjs/operators';\nimport { CourseService } from './course.service';\n\n@Component({ ... })\nexport class CourseComponent {\n  loading = false;\n  constructor(private service: CourseService) {}\n\n  chargerCours() {\n    this.loading = true;\n    this.service.getCourses()\n      .pipe(finalize(() => this.loading = false)) // S'exécute après succès ou échec\n      .subscribe(res => this.courses = res);\n  }\n}`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quel opérateur RxJS est idéal pour exécuter une action (comme désactiver un loader) à la fin d'un flux HTTP, qu'il soit réussi ou en erreur ?",
+              options: [
+                "map",
+                "finalize",
+                "catchError"
+              ],
+              correctIndex: 1,
+              explanation: "L'opérateur finalize() s'exécute de façon certaine lorsque l'Observable se termine ou produit une erreur, idéal pour basculer les variables de chargement."
+            },
+            aiResponses: {
+              "finalize": "L'opérateur RxJS qui capture la complétion d'un flux asynchrone pour y exécuter des nettoyages.",
+              "loader": "Améliore l'UX en indiquant visuellement à l'utilisateur que son action est en cours d'analyse.",
+              "default": "Besoin d'aide pour formater de beaux messages d'erreurs d'API sur votre interface ?"
+            }
+          }
+        ]
+      },
+      {
+        id: 9,
+        title: "Semaine 9 : Déploiement, Recette & Soutenance",
+        subtitle: "Bloc 3 : Production & Préparation Soutenance",
+        days: [
+          {
+            id: "w9-d1",
+            day: "Lundi",
+            topic: "Hébergement Cloud : Vercel, Render & Neon",
+            detail: "Déployer de manière découplée l'application Angular, l'API NestJS et PostgreSQL.",
+            course: `
+              <div class="course-text">
+                <p>Pour le passage en production, nous déployons les différents composants sur des hébergeurs Cloud spécialisés de manière isolée :</p>
+                <ul class="course-list">
+                  <li><strong>Vercel</strong> : Déploiement du front-end Angular statique à chaque push sur la branche main de GitHub. Le CDN mondial de Vercel assure des chargements ultra-rapides.</li>
+                  <li><strong>Render (ou Railway)</strong> : Hébergement du serveur NestJS (conteneurisé ou Node.js actif en arrière-plan).</li>
+                  <li><strong>Neon.tech</strong> : Base de données PostgreSQL hébergée dans le cloud Neon.</li>
+                </ul>
+              </div>
+            `,
+            example: `# Schéma d'infrastructure Cloud de production :\n\n[ Front Angular ] ➔ Déployé sur Vercel (CDN global)\n       |\n       +--(Appels HTTP)--> [ Back NestJS ] ➔ Déployé sur Render\n                                  |\n                                  +--(Prisma Client)--> [ PostgreSQL ] ➔ Neon.tech`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Pourquoi est-il avantageux de séparer l'hébergement du Front Angular (sur Vercel) de celui du Back NestJS (sur Render) ?",
+              options: [
+                "Parce que c'est obligatoire pour le protocole HTTPS",
+                "Pour optimiser les performances (CDN pour le statique) et pouvoir mettre à l'échelle (scaler) chaque partie de manière indépendante",
+                "Pour bloquer les requêtes SQL"
+              ],
+              correctIndex: 1,
+              explanation: "Séparer le statique (Angular sur Vercel) et le dynamique (NestJS sur Render) améliore la vitesse d'affichage initiale et réduit les coûts d'hébergement."
+            },
+            aiResponses: {
+              "vercel": "Plateforme cloud optimisée pour le déploiement continu d'applications statiques et de frameworks front-end.",
+              "render": "Service d'hébergement cloud idéal pour faire tourner des applications backend Node.js en continu.",
+              "default": "Besoin de conseils pour lier vos comptes GitHub à Vercel ou Render ?"
+            }
+          },
+          {
+            id: "w9-d2",
+            day: "Mardi",
+            topic: "Variables d'Environnement de Production",
+            detail: "Configurer les secrets sur Render, Vercel et s'assurer de l'activation du HTTPS.",
+            course: `
+              <div class="course-text">
+                <p>En production, le fichier local <code>.env</code> n'est pas téléversé. Les secrets doivent être renseignés dans les panneaux de configuration des hébergeurs :</p>
+                <ul class="course-list">
+                  <li><strong>Render</strong> : Configuration de <code>DATABASE_URL</code> (l'URL Neon.tech avec pooling PgBouncer) et <code>JWT_SECRET</code>.</li>
+                  <li><strong>Vercel</strong> : Configuration de l'URL de base de l'API (ex: <code>API_URL=https://tfe-api.onrender.com</code>).</li>
+                  <li><strong>HTTPS obligatoire</strong> : Les communications doivent être cryptées (SSL/TLS). Vercel, Render et Neon génèrent automatiquement ces certificats de sécurité gratuits.</li>
+                </ul>
+              </div>
+            `,
+            example: `# Exemples de configurations Cloud en production :\n\n- Render Env Var : DATABASE_URL = postgres://user:pass@neon-pooled.neon.tech/db?pgbouncer=true\n- Vercel Env Var : ENVIRONMENT = production`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Où doit-on déclarer la clé de connexion PostgreSQL (DATABASE_URL) en mode production ?",
+              options: [
+                "En la poussant en clair sur le dépôt GitHub public",
+                "Dans l'interface d'administration en ligne de l'hébergeur (Render/Vercel) dans la section Environment Variables",
+                "Dans le fichier de style CSS global"
+              ],
+              correctIndex: 1,
+              explanation: "Déclarer les secrets dans l'interface de l'hébergeur les injecte directement en mémoire au démarrage sans les exposer dans le code source."
+            },
+            aiResponses: {
+              "https": "Sécurise les requêtes réseau contre l'écoute ou le vol de données en chiffrant les échanges.",
+              "secrets": "Les secrets de production ne doivent jamais transiter dans votre historique de commits Git.",
+              "default": "Besoin de configurer des variables d'environnement sur votre tableau de bord Render ?"
+            }
+          },
+          {
+            id: "w9-d3",
+            day: "Mercredi",
+            topic: "Cahier de Recette & Transfert de Propriété",
+            detail: "Rédiger le cahier de recette fonctionnel et finaliser la passation technique au client.",
+            course: `
+              <div class="course-text">
+                <p>La **phase de recette** valide la conformité de l'application vis-à-vis des exigences initiales du client.</p>
+                <p>Le **Cahier de Recette** recense les scénarios à tester, les entrées à fournir et les résultats attendus.</p>
+                <p class="course-subtitle-internal">Le protocole de Transfert de Propriété (Passation) :</p>
+                <p>Pour un projet de TFE professionnel, le stage se conclut par le **transfert officiel de propriété intellectuelle et technique** :</p>
+                <ul class="course-list">
+                  <li>Création d'une boîte mail générique dédiée au projet (ex: <code>projet-tfe-client@gmail.com</code>).</li>
+                  <li>Transfert de l'ensemble des comptes de production (compte Vercel pour le Front, Render pour le Back, Neon.tech pour la base PostgreSQL) sur cette nouvelle boîte mail.</li>
+                  <li>Remise officielle du livrable de passation (dossier contenant les codes d'accès, le code source propre et le cahier de recette co-signé).</li>
+                </ul>
+              </div>
+            `,
+            example: `// Scénario de recette UAT type :\n\n- Scénario : Connexion avec mot de passe invalide\n- Action : Taper 'admin@tfe.com' et 'fake_pwd', puis soumettre\n- Résultat attendu : Alerte d'erreur 'Identifiants invalides' de statut HTTP 401\n- Statut UAT : [ OK ] (Validé et signé par le Client)`,
+            diagram: "none",
+            activity: {
+              type: "custom",
+              html: `
+                <div class="bcrypt-simulator">
+                  <span style="font-size: 11px;">Recette UAT & Transfert de Propriété (Passation) :</span>
+                  <div style="text-align: left; font-size:11.5px; display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+                    <label><input type="checkbox" id="uat-1" onchange="runUatSimulator()"> 1. Boîte mail de passation créée (ex: client-tfe@gmail.com)</label>
+                    <label><input type="checkbox" id="uat-2" onchange="runUatSimulator()"> 2. Comptes Vercel, Render & Neon.tech transférés</label>
+                    <label><input type="checkbox" id="uat-3" onchange="runUatSimulator()"> 3. Cahier de recette signé & Dépôt de code livré</label>
+                  </div>
+                  <div class="bcrypt-result" id="uat-output" style="margin-top: 8px;">
+                    Statut : 0/3 étapes de passation validées.
+                  </div>
+                </div>
+              `
+            },
+            aiResponses: {
+              "recette": "La recette fonctionnelle valide que le code répond aux besoins fonctionnels décrits dans les User Stories.",
+              "transfert": "La passation garantit que le client possède l'entière autonomie de son application après votre départ de l'entreprise.",
+              "default": "Besoin d'aide pour concevoir votre grille de tests ou le livrable de passation ?"
+            }
+          },
+          {
+            id: "w9-d4",
+            day: "Jeudi",
+            topic: "Préparation de la Soutenance",
+            detail: "Anticiper les questions d'architecture du jury du TFE (Angular, NestJS, Prisma).",
+            course: `
+              <div class="course-text">
+                <p>La défense orale du TFE devant le jury évalue vos compétences et justifie vos choix techniques.</p>
+                <p class="course-subtitle-internal">Questions classiques d'architecture à préparer :</p>
+                <ul class="course-list">
+                  <li><strong>« Pourquoi NestJS plutôt qu'Express brut ? »</strong> : Mettez en avant le besoin d'architecture modulaire stricte, l'injection de dépendances et la maintenabilité à long terme.</li>
+                  <li><strong>« Pourquoi Angular plutôt que React ? »</strong> : Argumentez sur le fait qu'Angular est un framework complet (opinonated) fournissant le routeur, le HttpClient et la validation de formulaires réactifs par défaut, éliminant les dépendances tierces instables.</li>
+                  <li><strong>« Quel est le rôle de Prisma et comment sécurise-t-il les requêtes ? »</strong> : Expliquez que Prisma évite les injections SQL en utilisant des requêtes paramétrées par défaut.</li>
+                </ul>
+              </div>
+            `,
+            example: `// Exemples de questions techniques du jury :\n- "Expliquez le fonctionnement de votre intercepteur HTTP Angular."\n- "Que se passe-t-il si la connexion avec Neon.tech échoue ? Comment votre Exception Filter gère-t-il l'erreur ?"\n- "Montrez-moi la validation de données dans vos DTOs NestJS."`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Si le jury demande : 'Comment assurez-vous l'intégrité et la non-altération de l'identité de l'utilisateur connecté ?', quelle est la réponse attendue ?",
+              options: [
+                "Le mot de passe est enregistré en clair dans PostgreSQL",
+                "Nous utilisons un token JWT signé avec une clé secrète connue du seul serveur NestJS. La signature est validée par notre Guard à chaque requête",
+                "Nous stockons le token sur le dépôt GitHub public"
+              ],
+              correctIndex: 1,
+              explanation: "Le jeton JWT signé garantit la sécurité. Toute modification du payload par un utilisateur invalide sa signature cryptographique lors de l'analyse du Guard NestJS."
+            },
+            aiResponses: {
+              "jury": "Le jury cherche à évaluer votre posture professionnelle et la justification rationnelle de vos choix de développement.",
+              "soutenance": "Préparez des démonstrations et des slides concises mettant en avant la conception (UML/MCD) et le code clé.",
+              "default": "Simulons le jury de soutenance ! Posez-moi des questions sur les points techniques."
+            }
+          },
+          {
+            id: "w9-d5",
+            day: "Vendredi",
+            topic: "Soutenance Finale",
+            detail: "Structurer la présentation orale pour valoriser le travail des 300 heures de stage.",
+            course: `
+              <div class="course-text">
+                <p>La soutenance dure généralement de 20 à 30 minutes. Structurez votre support de présentation (slides) de manière rigoureuse :</p>
+                <ol class="course-list">
+                  <li><strong>Introduction (15%)</strong> : Présentation de l'entreprise d'accueil, du problème métier et de la solution.</li>
+                  <li><strong>Analyse & Conception (35%)</strong> : Démonstration de votre posture d'analyste (cahier des charges, diagrammes de séquence UML, modélisation MCD PostgreSQL).</li>
+                  <li><strong>Réalisation Technique (35%)</strong> : Présentation de la stack (Angular, NestJS, Prisma), démonstration de l'application en direct, focus sur un point de code clé (ex: l'intercepteur HTTP ou un Guard).</li>
+                  <li><strong>Bilan & Passation (15%)</strong> : Bilan de l'avancement, limites, et descriptif du transfert de propriété technique au client.</li>
+                </ol>
+              </div>
+            `,
+            example: `Plan de diapositives recommandé :\n- Slide 1 : Titre et identification du candidat\n- Slide 2 : Contexte d'affaires (Problème / Solution)\n- Slide 3 : Diagramme d'architecture globale\n- Slide 4 : Modélisation MCD de données\n- Slide 5 : Démo / Parcours utilisateur\n- Slide 6 : Focus Code (Sécurité / Auth)\n- Slide 7 : Conclusion et Bilan`,
+            diagram: "none",
+            activity: {
+              type: "quiz",
+              question: "Quelle part de présentation doit être dédiée aux aspects d'analyse fonctionnelle (UML, MCD) et de développement technique ?",
+              options: [
+                "Environ 10% du temps total",
+                "Environ 70% du temps total (35% Conception / 35% Développement)",
+                "95% du temps"
+              ],
+              correctIndex: 1,
+              explanation: "Le jury évalue vos capacités de concepteur et de développeur. Consacrer les 2/3 du temps à l'analyse et à la technique valorise votre profil d'Analyste-Développeur."
+            },
+            aiResponses: {
+              "soutenance": "Répétez votre présentation avec un chronomètre pour maîtriser le temps alloué.",
+              "demo": "Préparez des données de test réalistes dans votre base Neon.tech de production pour sécuriser la démonstration devant le jury.",
+              "default": "Besoin de conseils pour peaufiner votre présentation orale ?"
+            }
+          }
+        ]
+      }
+    ];
+
+    /* -------------------------------------------------------------
+       ÉTAT DE L'APPLICATION (Global State)
+       ------------------------------------------------------------- */
+    let currentWeekId = 1;
+    let validatedSessions = new Set();
+    const STORAGE_KEY = 'tfe_progress_sessions_v4'; // Clé v4 pour la nouvelle stack officielle
+
+    /* -------------------------------------------------------------
+       ÉLÉMENTS DU DOM
+       ------------------------------------------------------------- */
+    const navTabsContainer = document.getElementById('nav-tabs');
+    const weekTitleEl = document.getElementById('week-title');
+    const weekSubtitleEl = document.getElementById('week-subtitle');
+    const cardsContainer = document.getElementById('cards-container');
+    
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    const progressStatsTop = document.getElementById('progress-stats-top');
+    
+    const statSessionsEl = document.getElementById('stat-sessions');
+    const statHoursEl = document.getElementById('stat-hours');
+    const btnReset = document.getElementById('btn-reset');
+
+    /* -------------------------------------------------------------
+       INITIALISATION
+       ------------------------------------------------------------- */
+    const init = () => {
+      loadProgress();
+      renderWeeksNav();
+      switchWeek(1);
+      updateGlobalProgress();
+      btnReset.addEventListener('click', confirmResetProgress);
+    };
+
+    /* -------------------------------------------------------------
+       PERSISTANCE LOCAL STORAGE
+       ------------------------------------------------------------- */
+    const loadProgress = () => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          validatedSessions = new Set(JSON.parse(stored));
+        }
+      } catch (e) {
+        console.error("Impossible de charger l'état local", e);
+        validatedSessions = new Set();
+      }
+    };
+
+    const saveProgress = () => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(validatedSessions)));
+      } catch (e) {
+        console.error("Impossible de sauvegarder l'état local", e);
+      }
+    };
+
+    /* -------------------------------------------------------------
+       RENDU NAVIGATION PAR SEMAINE
+       ------------------------------------------------------------- */
+    const renderWeeksNav = () => {
+      navTabsContainer.innerHTML = '';
+      WEEKS_DATA.forEach(week => {
+        const btn = document.createElement('button');
+        btn.className = `tab-button ${week.id === currentWeekId ? 'active' : ''}`;
+        btn.id = `tab-btn-${week.id}`;
+        btn.textContent = `Semaine ${week.id}`;
+        btn.setAttribute('aria-selected', week.id === currentWeekId ? 'true' : 'false');
+        btn.addEventListener('click', () => switchWeek(week.id));
+        navTabsContainer.appendChild(btn);
+      });
+    };
+
+    /* Basculer de semaine active */
+    const switchWeek = (weekId) => {
+      currentWeekId = weekId;
+      
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+      });
+      
+      const activeBtn = document.getElementById(`tab-btn-${weekId}`);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.setAttribute('aria-selected', 'true');
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+
+      const weekData = WEEKS_DATA.find(w => w.id === weekId);
+      if (weekData) {
+        weekTitleEl.textContent = weekData.title;
+        weekSubtitleEl.textContent = weekData.subtitle;
+        renderCards(weekData.days);
+      }
+    };
+
+    /* -------------------------------------------------------------
+       RENDU DES CARTES DU JOUR
+       ------------------------------------------------------------- */
+    const renderCards = (days) => {
+      cardsContainer.innerHTML = '';
+      
+      days.forEach(day => {
+        const isChecked = validatedSessions.has(day.id);
+        const card = document.createElement('article');
+        card.className = `card ${isChecked ? 'validated' : ''}`;
+        card.id = `card-${day.id}`;
+        
+        card.innerHTML = `
+          <!-- Header cliquable (Dépliage accordéon) -->
+          <div class="card-summary-header" onclick="toggleCard('${day.id}')">
+            <div class="card-meta">
+              <span class="card-day-badge">${day.day}</span>
+              <span class="card-expand-indicator">
+                Déplier
+                <svg viewBox="0 0 24 24">
+                  <path d="M7 10l5 5 5-5H7z"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="card-title">${day.topic}</h3>
+            <p class="card-short-desc">${day.detail}</p>
+          </div>
+
+          <!-- Détails pliables -->
+          <div class="card-details-wrapper">
+            <div class="card-details-content">
+              
+              <!-- Tabulations d'onglets de cours -->
+              <div class="details-tabs">
+                <button class="details-tab-btn active" onclick="switchDetailsTab(event, 'course')">📖 Cours</button>
+                <button class="details-tab-btn" onclick="switchDetailsTab(event, 'example')">💻 Exemple</button>
+                <button class="details-tab-btn" onclick="switchDetailsTab(event, 'activity')">⚡ Activité</button>
+                <button class="details-tab-btn" onclick="switchDetailsTab(event, 'chat')">🤖 Tuteur IA</button>
+              </div>
+
+              <!-- Onglet 1 : Texte du Cours -->
+              <div class="tab-content course-tab active">
+                ${day.course}
+              </div>
+
+              <!-- Onglet 2 : Exemples / Schémas -->
+              <div class="tab-content example-tab">
+                <pre class="example-code-block">${day.example}</pre>
+                ${renderDiagramSVG(day.diagram)}
+              </div>
+
+              <!-- Onglet 3 : Activité Interactive -->
+              <div class="tab-content activity-tab">
+                ${renderActivity(day)}
+              </div>
+
+              <!-- Onglet 4 : Chatbot IA -->
+              <div class="tab-content chat-tab">
+                <div class="chat-container">
+                  <div class="chat-messages" id="chat-msg-${day.id}">
+                    <div class="chat-bubble tutor">
+                      ${day.aiResponses.default}
+                    </div>
+                  </div>
+                  <div class="chat-input-bar">
+                    <input type="text" class="chat-input" id="chat-input-${day.id}" placeholder="Posez une question sur le cours..." onkeydown="handleChatKey(event, '${day.id}')">
+                    <button class="chat-send-btn" onclick="sendChatMsg('${day.id}')">Envoyer</button>
+                  </div>
+                </div>
+                <div class="chat-prompt-helper">
+                  <span style="font-size: 11px; color: var(--text-dark);">Question complexe ?</span>
+                  <button class="btn-copy-prompt" onclick="copyAIPrompt('${day.id}', '${day.topic}')">
+                    Copier le Prompt Tuteur
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Barre de validation (Mobile tactile) -->
+          <div class="card-footer-validation">
+            <label class="validation-label" for="chk-${day.id}">
+              <input type="checkbox" id="chk-${day.id}" class="validation-checkbox" 
+                ${isChecked ? 'checked' : ''} 
+                onchange="toggleSessionValidation('${day.id}')"
+              >
+              <span class="checkmark">
+                <svg viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="validation-text">${isChecked ? 'Session Validée (45 min)' : 'Valider la session (45 min)'}</span>
+            </label>
+          </div>
+        `;
+        
+        cardsContainer.appendChild(card);
+      });
+    };
+
+    /* -------------------------------------------------------------
+       ACCORDÉONS & TABS INTERNES
+       ------------------------------------------------------------- */
+    const toggleCard = (dayId) => {
+      const card = document.getElementById(`card-${dayId}`);
+      
+      document.querySelectorAll('.card').forEach(c => {
+        if (c.id !== `card-${dayId}`) {
+          c.classList.remove('expanded');
+        }
+      });
+      
+      card.classList.toggle('expanded');
+    };
+
+    const switchDetailsTab = (event, tabName) => {
+      event.stopPropagation();
+      
+      const btn = event.currentTarget;
+      const card = btn.closest('.card');
+      
+      card.querySelectorAll('.details-tab-btn').forEach(b => b.classList.remove('active'));
+      card.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      btn.classList.add('active');
+      card.querySelector(`.tab-content.${tabName}-tab`).classList.add('active');
+    };
+
+    /* -------------------------------------------------------------
+       SCHÉMAS TECHNIQUES SVG
+       ------------------------------------------------------------- */
+    const renderDiagramSVG = (type) => {
+      if (!type || type === "none") return "";
+      
+      let svgContent = "";
+      
+      if (type === "pert") {
+        svgContent = `
+          <svg class="diagram-svg" width="340" height="100" viewBox="0 0 340 100">
+            <g stroke="#27272a" stroke-width="2">
+              <line x1="20" y1="50" x2="100" y2="50" stroke="#ffffff"/>
+              <line x1="100" y1="50" x2="200" y2="50" stroke="#ffffff"/>
+              <line x1="200" y1="50" x2="300" y2="50" stroke="#ffffff"/>
+            </g>
+            <circle cx="20" cy="50" r="16" fill="#09090b" stroke="#27272a" stroke-width="2"/>
+            <text x="20" y="53" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif">Déb</text>
+            
+            <circle cx="100" cy="50" r="20" fill="#09090b" stroke="#ffffff" stroke-width="2"/>
+            <text x="100" y="53" fill="#ffffff" font-size="9" text-anchor="middle" font-weight="700" font-family="sans-serif">Tâche A</text>
+            
+            <circle cx="200" cy="50" r="20" fill="#09090b" stroke="#ffffff" stroke-width="2"/>
+            <text x="200" y="53" fill="#ffffff" font-size="9" text-anchor="middle" font-weight="700" font-family="sans-serif">Tâche B</text>
+            
+            <circle cx="300" cy="50" r="20" fill="#09090b" stroke="#ffffff" stroke-width="2"/>
+            <text x="300" y="53" fill="#ffffff" font-size="9" text-anchor="middle" font-weight="700" font-family="sans-serif">Tâche C</text>
+            <text x="160" y="86" fill="#10b981" font-size="9" text-anchor="middle" font-weight="600" font-family="sans-serif">Chemin Critique : A ➔ B ➔ C (9j)</text>
+          </svg>
+        `;
+      } else if (type === "sequence") {
+        svgContent = `
+          <svg class="diagram-svg" width="340" height="120" viewBox="0 0 340 120">
+            <line x1="50" y1="20" x2="50" y2="100" stroke="#27272a" stroke-dasharray="3"/>
+            <line x1="170" y1="20" x2="170" y2="100" stroke="#27272a" stroke-dasharray="3"/>
+            <line x1="290" y1="20" x2="290" y2="100" stroke="#27272a" stroke-dasharray="3"/>
+            <text x="50" y="14" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif">Front</text>
+            <text x="170" y="14" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif">API Back</text>
+            <text x="290" y="14" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif">BDD</text>
+            
+            <line x1="50" y1="40" x2="166" y2="40" stroke="#ffffff" stroke-width="1"/>
+            <polygon points="170,40 164,37 164,43" fill="#ffffff"/>
+            <text x="110" y="34" fill="#ffffff" font-size="8" text-anchor="middle" font-family="sans-serif">POST /login</text>
+            
+            <line x1="170" y1="60" x2="286" y2="60" stroke="#ffffff" stroke-width="1"/>
+            <polygon points="290,60 284,57 284,63" fill="#ffffff"/>
+            <text x="230" y="54" fill="#ffffff" font-size="8" text-anchor="middle" font-family="sans-serif">Select User</text>
+            
+            <line x1="290" y1="80" x2="174" y2="80" stroke="#71717a" stroke-width="1" stroke-dasharray="2"/>
+            <polygon points="170,80 176,77 176,83" fill="#71717a"/>
+            <text x="230" y="74" fill="#71717a" font-size="8" text-anchor="middle" font-family="sans-serif">Hashed Pwd</text>
+          </svg>
+        `;
+      } else if (type === "mcd") {
+        svgContent = `
+          <svg class="diagram-svg" width="340" height="110" viewBox="0 0 340 110">
+            <rect x="10" y="10" width="100" height="80" fill="#09090b" stroke="#27272a" stroke-width="1.5"/>
+            <text x="60" y="26" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle" font-family="sans-serif">Utilisateur</text>
+            <line x1="10" y1="34" x2="110" y2="34" stroke="#27272a"/>
+            <text x="18" y="48" fill="#ffffff" font-size="8" font-family="monospace">id_user (PK)</text>
+            <text x="18" y="62" fill="#a1a1aa" font-size="8" font-family="monospace">email</text>
+            <text x="18" y="76" fill="#a1a1aa" font-size="8" font-family="monospace">password</text>
+
+            <line x1="110" y1="50" x2="220" y2="50" stroke="#27272a" stroke-width="1.5"/>
+            <text x="126" y="44" fill="#ffffff" font-size="8" font-family="sans-serif">1,N</text>
+            <text x="198" y="44" fill="#ffffff" font-size="8" font-family="sans-serif">1,1</text>
+
+            <rect x="220" y="10" width="110" height="80" fill="#09090b" stroke="#27272a" stroke-width="1.5"/>
+            <text x="275" y="26" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle" font-family="sans-serif">Commande</text>
+            <line x1="220" y1="34" x2="330" y2="34" stroke="#27272a"/>
+            <text x="228" y="48" fill="#ffffff" font-size="8" font-family="monospace">id_commande (PK)</text>
+            <text x="228" y="62" fill="#a1a1aa" font-size="8" font-family="monospace">date_commande</text>
+            <text x="228" y="76" fill="#ffffff" font-size="8" font-family="monospace">#id_user (FK)</text>
+          </svg>
+        `;
+      } else if (type === "gitflow") {
+        svgContent = `
+          <svg class="diagram-svg" width="340" height="100" viewBox="0 0 340 100">
+            <line x1="30" y1="30" x2="310" y2="30" stroke="#ffffff" stroke-width="2"/>
+            <circle cx="50" cy="30" r="4" fill="#000000" stroke="#ffffff" stroke-width="2"/>
+            <circle cx="290" cy="30" r="4" fill="#000000" stroke="#ffffff" stroke-width="2"/>
+            <text x="320" y="33" fill="#ffffff" font-size="8" font-weight="700" font-family="sans-serif">main</text>
+
+            <line x1="70" y1="70" x2="250" y2="70" stroke="#71717a" stroke-width="1.5"/>
+            <circle cx="90" cy="70" r="4" fill="#000000" stroke="#71717a" stroke-width="1.5"/>
+            <circle cx="230" cy="70" r="4" fill="#000000" stroke="#71717a" stroke-width="1.5"/>
+            <text x="265" y="73" fill="#71717a" font-size="8" font-weight="700" font-family="sans-serif">develop</text>
+
+            <path d="M 50 30 L 90 70" stroke="#27272a" stroke-dasharray="2"/>
+            <path d="M 230 70 L 290 30" stroke="#27272a" stroke-dasharray="2"/>
+          </svg>
+        `;
+      } else if (type === "jwt") {
+        svgContent = `
+          <svg class="diagram-svg" width="340" height="120" viewBox="0 0 340 120">
+            <rect x="10" y="30" width="80" height="60" fill="#09090b" stroke="#27272a"/>
+            <text x="50" y="62" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif">Navigateur</text>
+            <text x="50" y="76" fill="#a1a1aa" font-size="8" text-anchor="middle" font-family="monospace">LocalStorage</text>
+            
+            <line x1="90" y1="45" x2="230" y2="45" stroke="#ffffff" stroke-width="1.5"/>
+            <polygon points="230,45 224,42 224,48" fill="#ffffff"/>
+            <text x="160" y="38" fill="#ffffff" font-size="8" text-anchor="middle" font-family="sans-serif">Credentials</text>
+
+            <rect x="230" y="30" width="100" height="60" fill="#09090b" stroke="#27272a"/>
+            <text x="280" y="64" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif">Serveur API</text>
+
+            <line x1="230" y1="75" x2="98" y2="75" stroke="#71717a" stroke-width="1.5"/>
+            <polygon points="90,75 96,72 96,78" fill="#71717a"/>
+            <text x="160" y="88" fill="#71717a" font-size="8" text-anchor="middle" font-family="sans-serif">Token JWT</text>
+          </svg>
+        `;
+      }
+      
+      if (!svgContent) return "";
+      
+      return `
+        <div class="diagram-container">
+          ${svgContent}
+        </div>
+      `;
+    };
+
+    /* -------------------------------------------------------------
+       RENDU DES ACTIVITÉS INTERACTIVES
+       ------------------------------------------------------------- */
+    const renderActivity = (day) => {
+      const act = day.activity;
+      
+      if (act && act.type === "quiz") {
+        return `
+          <div class="activity-container" id="act-box-${day.id}">
+            <div class="activity-title">
+              Activité de Validation : Quiz
+            </div>
+            <p style="font-size: 13px; margin-bottom: 12px; font-weight:500;">${act.question}</p>
+            <div class="quiz-options">
+              ${act.options.map((opt, i) => `
+                <button class="quiz-opt-btn" onclick="validateQuizAnswer(this, '${day.id}', ${i}, ${act.correctIndex}, '${encodeURIComponent(act.explanation)}')">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+            <div class="quiz-feedback" id="feedback-${day.id}"></div>
+          </div>
+        `;
+      }
+      
+      return act ? act.html : `<p style="font-size: 12px; color: var(--text-dark);">Aucun exercice pour ce cours.</p>`;
+    };
+
+    /* Validation du Quiz */
+    window.validateQuizAnswer = (btn, dayId, selected, correct, encodedExplanation) => {
+      const feedbackBox = document.getElementById(`feedback-${dayId}`);
+      const options = btn.parentElement.querySelectorAll('.quiz-opt-btn');
+      const explanation = decodeURIComponent(encodedExplanation);
+      
+      options.forEach(b => b.disabled = true);
+      
+      if (selected === correct) {
+        btn.classList.add('correct');
+        feedbackBox.className = 'quiz-feedback success';
+        feedbackBox.innerHTML = `<strong>Correct.</strong> ${explanation}`;
+        
+        const chk = document.getElementById(`chk-${dayId}`);
+        if (chk && !chk.checked) {
+          chk.checked = true;
+          toggleSessionValidation(dayId);
+        }
+      } else {
+        btn.classList.add('incorrect');
+        options[correct].classList.add('correct');
+        feedbackBox.className = 'quiz-feedback';
+        feedbackBox.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+        feedbackBox.style.color = '#f87171';
+        feedbackBox.style.display = 'block';
+        feedbackBox.innerHTML = `<strong>Incorrect.</strong> ${explanation}`;
+      }
+    };
+
+    /* -------------------------------------------------------------
+       SIMULATEURS INTERACTIFS (SANDBOXES)
+       ------------------------------------------------------------- */
+    /* Zone tactile mobile (Angular + Bootstrap 5) */
+    let isLeftHanded = false;
+    window.toggleHand = (hand) => {
+      const zone = document.getElementById('thumb-zone-sim');
+      const alignContainer = document.getElementById('bs-btn-align');
+      
+      if (hand === 'left') {
+        zone.className = "thumb-zone left-hand";
+        alignContainer.style.justifyContent = 'flex-start';
+        isLeftHanded = true;
+      } else {
+        zone.className = "thumb-zone right-hand";
+        alignContainer.style.justifyContent = 'flex-end';
+        isLeftHanded = false;
+      }
+    };
+
+    /* HTTP status codes (NestJS Controller simulation) */
+    window.runHttpSimulator = () => {
+      const select = document.getElementById('http-status-select');
+      const output = document.getElementById('http-response-output');
+      const val = select.value;
+      
+      let badgeClass = "status-2xx";
+      let codeSnippet = "";
+      let httpResponse = "";
+      
+      if (val.startsWith("4")) badgeClass = "status-4xx";
+      if (val.startsWith("5")) badgeClass = "status-5xx";
+      
+      if (val === "200") {
+        codeSnippet = `@Get(':id')\nasync findOne(@Param('id') id: string) {\n  return this.courseService.findOne(+id);\n}`;
+        httpResponse = "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{\n  \"id\": 5,\n  \"title\": \"HTTP & REST dans NestJS\",\n  \"duration\": 45\n}";
+      } else if (val === "201") {
+        codeSnippet = `@Post()\n@HttpCode(201)\nasync create(@Body() createDto: CreateUserDto) {\n  return this.userService.create(createDto);\n}`;
+        httpResponse = "HTTP/1.1 201 Created\nContent-Type: application/json\n\n{\n  \"id\": 42,\n  \"email\": \"etudiant@neon.tech\",\n  \"message\": \"User registered\"\n}";
+      } else if (val === "400") {
+        codeSnippet = `// Déclenché par la validation globale de NestJS :\n// app.useGlobalPipes(new ValidationPipe());\n\n@Post()\nasync create(@Body() createDto: CreateUserDto) { ... }`;
+        httpResponse = "HTTP/1.1 400 Bad Request\nContent-Type: application/json\n\n{\n  \"statusCode\": 400,\n  \"message\": [\"email must be an email\", \"password must be longer than 8 characters\"],\n  \"error\": \"Bad Request\"\n}";
+      } else if (val === "401") {
+        codeSnippet = `@UseGuards(JwtAuthGuard)\n@Get('profile')\nasync getProfile(@Request() req) {\n  return req.user;\n}`;
+        httpResponse = "HTTP/1.1 401 Unauthorized\nContent-Type: application/json\n\n{\n  \"statusCode\": 401,\n  \"message\": \"Token absent ou invalide\",\n  \"error\": \"Unauthorized\"\n}";
+      } else if (val === "404") {
+        codeSnippet = `// Erreur levée dans le service si Prisma renvoie null\nconst user = await this.prisma.user.findUnique({ where: { id } });\nif (!user) throw new NotFoundException('Utilisateur introuvable');`;
+        httpResponse = "HTTP/1.1 404 Not Found\nContent-Type: application/json\n\n{\n  \"statusCode\": 404,\n  \"message\": \"Utilisateur introuvable\",\n  \"error\": \"Not Found\"\n}";
+      } else if (val === "500") {
+        codeSnippet = `// Erreur d'accès à PostgreSQL Neon.tech attrapée par l'ExceptionFilter :\n@Catch(QueryFailedError)\nexport class DatabaseExceptionFilter implements ExceptionFilter { ... }`;
+        httpResponse = "HTTP/1.1 500 Internal Server Error\nContent-Type: application/json\n\n{\n  \"statusCode\": 500,\n  \"timestamp\": \"2026-06-29T15:08:00Z\",\n  \"message\": \"Erreur système de base de données PostgreSQL.\"\n}";
+      }
+
+      output.innerHTML = `
+        <span class="http-status-badge ${badgeClass}">Code : ${val}</span>
+        <div style="margin-top: 8px; font-weight: 700; font-size: 10px; color: var(--accent-cyan);">CODE CONTROLEUR NESTJS :</div>
+        <pre style="margin-top: 4px; font-family: var(--font-mono); color: #818cf8; font-size:10px;">${codeSnippet}</pre>
+        <div style="margin-top: 8px; font-weight: 700; font-size: 10px; color: var(--success-green);">REPONSE HTTP FLUX RE-EMIS :</div>
+        <pre style="margin-top: 4px; font-family: var(--font-mono); color: #cbd5e1; font-size:10px;">${httpResponse}</pre>
+      `;
+    };
+
+    /* Bcrypt (NestJS simulation) */
+    window.runBcryptSimulator = () => {
+      const pwd = document.getElementById('bcrypt-pwd').value;
+      const output = document.getElementById('bcrypt-result-output');
+      
+      if (!pwd) {
+        output.textContent = "Veuillez entrer un mot de passe.";
+        return;
+      }
+
+      output.textContent = "Hachage asynchrone Bcrypt (cost = 12)...";
+      
+      setTimeout(() => {
+        const fakeSalt = "R9h/cIPz9y.i68wNgE";
+        const hash = `$2b$12$${fakeSalt}${Math.random().toString(36).substring(2, 15).padEnd(12, 'x')}`;
+        output.innerHTML = `
+          <strong style="color:var(--success-green);">Hash généré par HashService :</strong>
+          <div style="margin-top: 4px; font-size:11px; color:#ffffff; font-family: var(--font-mono);">${hash}</div>
+          <div style="font-size: 9.5px; color: var(--text-dark); margin-top: 4px;">
+            Hachage salé stocké dans la colonne 'password' de votre table User via Prisma.
+          </div>
+        `;
+      }, 150);
+    };
+
+    /* Flexbox */
+    window.runFlexboxSimulator = () => {
+      const dir = document.getElementById('flex-dir').value;
+      const just = document.getElementById('flex-just').value;
+      const preview = document.getElementById('flex-preview');
+      
+      if (preview) {
+        preview.style.flexDirection = dir;
+        preview.style.justifyContent = just;
+        if (dir === 'column') {
+          preview.style.height = '150px';
+        } else {
+          preview.style.height = '90px';
+        }
+      }
+    };
+
+    /* DOM Diffing */
+    window.simulateDomDiff = () => {
+      const realFlash = document.getElementById('real-dom-flash');
+      const virtFlash = document.getElementById('virtual-dom-flash');
+      
+      if (realFlash && virtFlash) {
+        realFlash.style.backgroundColor = '#b91c1c';
+        realFlash.textContent = "RE-RENDU TOTAL !";
+        
+        virtFlash.style.backgroundColor = '#047857';
+        virtFlash.textContent = "Seul le texte change !";
+        
+        setTimeout(() => {
+          realFlash.style.backgroundColor = '#ef4444';
+          realFlash.textContent = "Changement global";
+          virtFlash.style.backgroundColor = '#10b981';
+          virtFlash.textContent = "MàJ Ciblée";
+        }, 1000);
+      }
+    };
+
+    /* Recette UAT & Passation (W9-D3) */
+    window.runUatSimulator = () => {
+      const c1 = document.getElementById('uat-1').checked;
+      const c2 = document.getElementById('uat-2').checked;
+      const c3 = document.getElementById('uat-3').checked;
+      const output = document.getElementById('uat-output');
+      
+      const count = (c1 ? 1 : 0) + (c2 ? 1 : 0) + (c3 ? 1 : 0);
+      
+      if (count === 3) {
+        output.innerHTML = `
+          <strong style="color:var(--success-green);">Passation Réussie : UAT validée !</strong>
+          <div style="font-size:10px; color: var(--text-muted); margin-top:2px;">
+            Propriété transférée au client (Vercel/Render/Neon ok) + cahier de recette signé.
+          </div>
+        `;
+      } else {
+        output.textContent = `Statut : ${count}/3 étapes de passation validées.`;
+      }
+    };
+
+    /* -------------------------------------------------------------
+       MOTEUR DE CHATBOT CONTEXTUEL LOCAL
+       ------------------------------------------------------------- */
+    window.handleChatKey = (event, dayId) => {
+      if (event.key === 'Enter') {
+        sendChatMsg(dayId);
+      }
+    };
+
+    window.sendChatMsg = (dayId) => {
+      const inputEl = document.getElementById(`chat-input-${dayId}`);
+      const text = inputEl.value.trim();
+      if (!text) return;
+      
+      const chatArea = document.getElementById(`chat-msg-${dayId}`);
+      
+      const userBubble = document.createElement('div');
+      userBubble.className = "chat-bubble user";
+      userBubble.textContent = text;
+      chatArea.appendChild(userBubble);
+      
+      inputEl.value = "";
+      chatArea.scrollTop = chatArea.scrollHeight;
+      
+      let activeDay = null;
+      for (const week of WEEKS_DATA) {
+        const found = week.days.find(d => d.id === dayId);
+        if (found) {
+          activeDay = found;
+          break;
+        }
+      }
+
+      const cleanText = text.toLowerCase();
+      let responseText = "";
+
+      if (activeDay && activeDay.aiResponses) {
+        for (const key of Object.keys(activeDay.aiResponses)) {
+          if (cleanText.includes(key)) {
+            responseText = activeDay.aiResponses[key];
+            break;
+          }
+        }
+        
+        if (!responseText) {
+          responseText = `C'est une excellente question sur le cours « ${activeDay.topic} » sous la stack Angular / NestJS. Pour des explications personnalisées plus détaillées, copiez le prompt expert ci-dessous et envoyez-le à votre assistant IA Antigravity dans notre fil de discussion !`;
+        }
+      } else {
+        responseText = "Impossible de charger le contexte du cours.";
+      }
+
+      setTimeout(() => {
+        const tutorBubble = document.createElement('div');
+        tutorBubble.className = "chat-bubble tutor";
+        tutorBubble.textContent = responseText;
+        chatArea.appendChild(tutorBubble);
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }, 300);
+    };
+
+    window.copyAIPrompt = (dayId, topic) => {
+      const promptText = `Agis en tant que Tuteur IA. Je suis en train de suivre la formation quotidienne du TFE Micro-Learning. Aujourd'hui nous étudions : "${topic}" (Identifiant : ${dayId}) avec la stack Angular, NestJS, Prisma et PostgreSQL (Neon.tech). Explique-moi plus en détail ce cours avec de nouvelles démonstrations concrètes en français.`;
+      
+      navigator.clipboard.writeText(promptText).then(() => {
+        alert("Prompt expert copié ! Collez-le dans notre chat Antigravity pour me poser votre question.");
+      }).catch(err => {
+        console.error("Erreur de copie", err);
+      });
+    };
+
+    /* -------------------------------------------------------------
+       GESTION PROGRESSION & VALIDATION
+       ------------------------------------------------------------- */
+    window.toggleSessionValidation = (dayId) => {
+      const chk = document.getElementById(`chk-${dayId}`);
+      const card = document.getElementById(`card-${dayId}`);
+      const valText = card.querySelector('.validation-text');
+      
+      if (chk.checked) {
+        validatedSessions.add(dayId);
+        card.classList.add('validated');
+        valText.textContent = "Session Validée (45 min)";
+      } else {
+        validatedSessions.delete(dayId);
+        card.classList.remove('validated');
+        valText.textContent = "Valider la session (45 min)";
+      }
+      
+      saveProgress();
+      updateGlobalProgress();
+    };
+
+    const updateGlobalProgress = () => {
+      const totalSessions = 45;
+      const count = validatedSessions.size;
+      const percentage = Math.round((count / totalSessions) * 100);
+      
+      // Update barre supérieure
+      progressBarFill.style.width = `${percentage}%`;
+      progressStatsTop.innerHTML = `<span>${count}</span> / ${totalSessions} validés`;
+      
+      // Update stats bas
+      statSessionsEl.textContent = `${count} / ${totalSessions}`;
+      
+      // Heures cumulées (45m par session)
+      const totalMinutes = count * 45;
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = totalMinutes % 60;
+      
+      if (hours > 0) {
+        statHoursEl.textContent = `${hours}h ${mins > 0 ? mins + 'm' : ''}`;
+      } else {
+        statHoursEl.textContent = `${mins} min`;
+      }
+    };
+
+    const confirmResetProgress = () => {
+      const ask = confirm("Voulez-vous réinitialiser toute votre progression de micro-learning ?");
+      if (ask) {
+        validatedSessions.clear();
+        saveProgress();
+        updateGlobalProgress();
+        switchWeek(currentWeekId);
+      }
+    };
+
+    // Lancement de l'application
+    document.addEventListener('DOMContentLoaded', init);
+
+  </script>
+</body>
+</html>
